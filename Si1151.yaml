@@ -10,8 +10,8 @@ esp32:
   board: seeed_xiao_esp32c3
   framework:
     type: arduino
-    version: latest
-    platform_version: 6.3.2
+#    version: latest
+#    platform_version: 6.3.2
 
 logger:
   level: VERBOSE
