@@ -124,9 +124,9 @@ enum ParameterAddress {
 
 class Si1151Component : public PollingComponent, public i2c::I2CDevice {
   public:
-    void set_ir_sensor(sensor::Sensor ir_sensor) { ir_sensor_ = ir_sensor; }
-    void set_visible_sensor(sensor::Sensor visible_sensor) { visible_sensor_ = visible_sensor; }
-    void set_uv_sensor(sensor::Sensor uv_sensor) { uv_sensor_ = uv_sensor; }
+    void set_ir_sensor(sensor::Sensor *ir_sensor) { ir_sensor_ = ir_sensor; }
+    void set_visible_sensor(sensor::Sensor *visible_sensor) { visible_sensor_ = visible_sensor; }
+    void set_uv_sensor(sensor::Sensor *uv_sensor) { uv_sensor_ = uv_sensor; }
 
     void setup() override;
     float get_setup_priority() const override {
