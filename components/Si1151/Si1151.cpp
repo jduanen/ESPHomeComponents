@@ -17,9 +17,11 @@ void Si1151Component::setup() {
     ESP_LOGE(TAG, "Si1151 failed setup");
     return;
   }
-/*
-  send_command(START);
 
+  send_command(START);
+  ESP_LOGV(TAG, "Si1151 successfully set up");
+
+/*
     Si115X::param_set(Si115X::CHAN_LIST, 0B000010);
 
     Si115X::param_set(Si115X::MEASRATE_H, 0);
@@ -86,20 +88,27 @@ int read_register(uint8_t reg, int bytes) {
   }
   return val;
 }
+*/
 
 void send_command(uint8_t code) {
   uint8_t packet[2];
   int resp, cmd_ctr;
 
+  packet[0] = COMMAND;
+  packet[1] = code;
   do {
-    cmd_ctr = read_register(RESPONSE_0, 1);
-    packet[0] = COMMAND;
-    packet[1] = code;
+    if (this->read_register(RESPONSE_0, &cmd_ctr, 1) != i2c::ERROR_OK) {
+      ESP_LOGE(TAG, "send_command: read_register failed");
+      continue;
+    }
     write_data(packet, sizeof(packet));
-    resp = read_register(RESPONSE_0, 1);
+    if (this->read_register(RESPONSE_0, &resp, 1) != i2c::ERROR_OK) {
+      ESP_LOGE(TAG, "send_command: read_register failed");
+      continue;
+    }
   } while (resp > cmd_ctr);
 };
-*/
+
 
 }  // namespace Si1151
 }  // namespace esphome
