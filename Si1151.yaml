@@ -1,10 +1,10 @@
 esphome:
   name: si1151-0
   friendly_name: Sunlight Sensor
-  includes:
-    - Si1151.h
-  libraries:
-    - "Si115X"
+
+external_components:
+  - source: github://jduanen/ESPHomeComponents
+    components: [ Si1151 ]
 
 esp32:
   board: seeed_xiao_esp32c3
@@ -37,26 +37,13 @@ i2c:
     sda: GPIO6
     scl: GPIO7
     scan: true
-    frequency: 800kHz
-
-##      Si1151 *light_sensor = new Si1151();
+    frequency: 400kHz
 
 sensor:
-  - platform: custom
-    lambda: |-
-      Si1151 *light_sensor = new Si1151();
-      App.register_component(light_sensor);
-      return {light_sensor};
-    sensors:
-      - name: "Sunlight IR"
-        id: sunlight_ir
-#        unit_of_measurement: ?
-#        accuracy_decimals: 2
-      - name: "Sunlight Visible"
-        id: sunlight_visible
-#        unit_of_measurement: ?
-#        accuracy_decimals: 2
-      - name: "Sunlight UV"
-        id: sunlight_uv
-#        unit_of_measurement: ?
-#        accuracy_decimals: 2
+  - platform: Si1151
+    infrared_channel:
+      name: "Sunlight IR"
+    visible_channel:
+      name: "Sunlight Visible"
+    uv_channel:
+      name: "Sunlight UV"
