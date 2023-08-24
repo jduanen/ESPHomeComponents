@@ -12,7 +12,7 @@ from esphome.const import (
 DEPENDENCIES = ["i2c"]
 
 si1151_ns = cg.esphome_ns.namespace("Si1151")
-SI1151Component = si1151_ns.class_("SI1151Component", cg.PollingComponent, i2c.I2CDevice)
+Si1151Component = si1151_ns.class_("Si1151Component", cg.PollingComponent, i2c.I2CDevice)
 
 CONF_IR_CHANNEL = "infrared_channel"
 CONF_VISIBLE_CHANNEL = "visible_channel"
@@ -43,7 +43,7 @@ ultraviolet_channel_schema = sensor.sensor_schema(
 CONFIG_SCHEMA = (
     cv.Schema(
         {
-            cv.GenerateID(): cv.declare_id(SI1151Component),
+            cv.GenerateID(): cv.declare_id(Si1151Component),
             cv.Optional(CONF_IR_CHANNEL): infrared_channel_schema,
             cv.Optional(CONF_VISIBLE_CHANNEL): visible_channel_schema,
             cv.Optional(CONF_UV_CHANNEL): ultraviolet_channel_schema,
