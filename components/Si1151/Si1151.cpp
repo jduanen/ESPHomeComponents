@@ -10,7 +10,7 @@ static const char *const TAG = "Si1151";
 
 void Si1151Component::setup() {
   uint8_t id;
-  ESP_LOGCONFIG(TAG, "Setting up Si1151...");
+  ESP_LOGCONFIG(TAG, "Setting up Si1151...1");
 
   if (this->read_register(PART_ID, &id, 1) != i2c::ERROR_OK) {
     this->mark_failed();
