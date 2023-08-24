@@ -90,7 +90,7 @@ int read_register(uint8_t reg, int bytes) {
 }
 */
 
-void send_command(uint8_t code) {
+void Si1151Component::send_command(uint8_t code) {
   uint8_t packet[2];
   int resp, cmd_ctr;
 
@@ -101,7 +101,10 @@ void send_command(uint8_t code) {
       ESP_LOGE(TAG, "send_command: read_register failed");
       continue;
     }
-    write_data(packet, sizeof(packet));
+    if (this->write(packet, sizeof(packet)) != i2c::ERROR_OK) {
+      ESP_LOGE(TAG, "send_command: write data failed");
+      continue;
+    }
     if (this->read_register(RESPONSE_0, &resp, 1) != i2c::ERROR_OK) {
       ESP_LOGE(TAG, "send_command: read_register failed");
       continue;
