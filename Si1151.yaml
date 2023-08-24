@@ -45,5 +45,7 @@ sensor:
       name: "Sunlight IR"
     visible_channel:
       name: "Sunlight Visible"
-    uv_channel:
+    ultraviolet_channel:
       name: "Sunlight UV"
+    address: 0x53
+    update_interval: 60s
