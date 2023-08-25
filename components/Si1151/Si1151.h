@@ -151,7 +151,12 @@ class Si1151Component : public PollingComponent, public i2c::I2CDevice {
   sensor::Sensor *visible_sensor_{nullptr};
   sensor::Sensor *uv_sensor_{nullptr};
 
-  void send_command(uint8_t code);
+  bool send_command_(uint8_t code);
+  bool set_parameter_(uint8_t loc, uint8_t val);
+
+  int32_t read_IR_(void);
+  int32_t read_visible_(void);
+  float read_UV_(void);
 };
 
 }  // namespace Si1151
