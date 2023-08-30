@@ -130,14 +130,40 @@ enum ParameterAddress {
   L_THRSHOLD_L = 0x2D   // ...
 };
 
+// selected by ADCMUX[4:0] in the ADCCONFIG_? parameters
+// N.B. discrepancy between definitions in datasheet Table 8.3 and 7.2.1 (ADDCONFIGx)
+// Daily average insolation: ~6kWh/m^2
+// Max normal surface irradiance (sea level, cloudless, noon): ~1050W/m^2
+// Counts/(W/m^2) -- DECIM=0, HW_GAIN=0, SW_GAIN=0, HSIG=0
+// Sensor:          460 (blue), 525 (green), 625 (red), 850 (ir), 940 (ir)
+// (Small) Visible:        190,  160,  100,   30,   10
+// (Medium/)Large Visible: 380,  320,  200,   60,   20
+// Small IR:                90,  260,  510,  690,  490
+// Medium IR:              190,  520, 1000, 1280,  860
+// Large IR (estimated):   380, 1040, 2000, 2560, 1720
+enum Sensors {
+  SMALL_IR_SENSOR      = 0x0, // 0b00000; 0x00
+  MEDIUM_IR_SENSOR     = 0x1, // 0b00001; 0x01
+  LARGE_IR_SENSOR      = 0x2, // 0b00010; n/a
+  SMALL_VISIBLE_SENSOR = 0xB, // 0b01011; 0x11 (small visible)
+  LARGE_VISIBLE_SENSOR = 0xD  // 0b01101; 0x13 (medium visible);
+};
+
+// one channel per sensor
 enum Channels {
-  IR_CHANNEL      = 0,
-  VISIBLE_CHANNEL = 1,
-  UV_CHANNEL      = 2
+  SMALL_IR_CHANNEL      = 0x0,
+  MEDIUM_IR_CHANNEL     = 0x1,
+  LARGE_IR_CHANNEL      = 0x2,
+  SMALL_VISIBLE_CHANNEL = 0x3,
+  LARGE_VISIBLE_CHANNEL = 0x4
 };
 
 
-uint8_t const MAX_NUM_CHANNELS = 6;
+uint8_t const MAX_NUM_CHANNELS = 6; // HW-defined
+
+uint8_t const NUM_IR_SENSORS = 3;       // one each for small, medium, and large
+uint8_t const NUM_VISIBLE_SENSORS = 2;  // one each for small and large
+uint8_t const MAX_NUM_SENSORS = (NUM_IR_SENSORS + NUM_VISIBLE_SENSORS);  // HW-defined
 
 // RESPONSE_0 bit indicies
 uint8_t const RSP0_RUNNING_INDX = 7;
@@ -166,7 +192,7 @@ uint8_t const RSP0_CMD_CTR = 0x0F;
 //            0x1=Parameter access to invalid location
 //            0x2=Saturation of ADC or overflow of accumulation
 //            0x3=Output buffer overflow (e.g., Burst > 26B)
-uint8_t const RSP0_ERR_CODE = 0x0F
+uint8_t const RSP0_ERR_CODE = 0x0F;
 
 // RESPONSE_1 bit masks
 uint8_t const RSP1_PARAM_ADDR = 0x3F;
@@ -174,12 +200,54 @@ uint8_t const RSP1_PARAM_ADDR = 0x3F;
 // Parameter address mask
 uint8_t const PARAM_ADDR = 0x3F;
 
+// Channel Setup Parameters
+// * ADCCONFIG_?:
+//   - RSRVD[7]: 0
+//   - DECIM_RATE[6:5]: select ADC decimation rate, 0-1024 clocks, normal=0
+//   - ADCMUX[4:0]: Small/Medium/Large IR (1:2:4 gain), Visible and Large Visible (1:2 gain)
+// * ADCSENS_?:
+//   - HSIG[7]: enables ADC high signal range, reduces sensitivity for higher light level measurements
+//   - SW_GAIN[6:4]: internal accumulation of samples into 24bits, 1-128 measurements
+//   - HW_GAIN[3:0]: nominal measurement time for 512 decimation rate
+// * ADCPOST_?:
+//   - RSRVD[7]: 0
+//   - OUT_24BIT[6]: 0=16-bit unsigned integer, 1=24-bit signed integer
+//   - POSTSHIFT[5:3]: number of bits to shift right after SW accumulation
+//   - THRESH_POL[2]: 0=interrupt when sample is greater than threshold,
+//                    1=interrupt when is smaller than threshold
+//   - THRESH_EN[1:0]: 0=don't use threshold, enable thresholds
+// * MEASCONFIG_?:
+//   - COUNTER_INDEX[7:6]: select which MEASCOUNT? to use in this channel
+//   - RSRVD[5:4]: 0
+//   - BANK_SEL[3]: select LED current configuration
+//   - LED2_EN[2]: enable LED2 driver
+//   - LED3_EN[1]: enable LED1 driver
+//   - LED1_EN[0]: enable LED0 driver
+
+// Masks for Channel Parameters
+uint8_t const DECIM_RATE    = 0x60;  // ADCCONFIG_?
+uint8_t const ADCMUX        = 0x1F;  // ...
+
+uint8_t const HSIG          = 0x80;  // ADCSENS_?
+uint8_t const SW_GAIN       = 0x70;  // ...
+uint8_t const HW_GAIN       = 0x0F;
+
+uint8_t const OUT_24BIT     = 0x40;  // ADCPOST_?
+uint8_t const POSTSHIFT     = 0x38;  // ...
+uint8_t const THRESH_POL    = 0x04;
+uint8_t const THRESH_EN     = 0x03;
+
+uint8_t const COUNTER_INDEX = 0xC0;  // MEASCONFIG_?
+uint8_t const BANK_SEL      = 0x20;  // ...
+uint8_t const LED2_EN       = 0x04;
+uint8_t const LED3_EN       = 0x02;
+uint8_t const LED1_EN       = 0x01;
+
 
 class Si1151Component : public PollingComponent, public i2c::I2CDevice {
   public:
     void set_ir_sensor(sensor::Sensor *ir_sensor);
     void set_visible_sensor(sensor::Sensor *visible_sensor);
-    void set_uv_sensor(sensor::Sensor *uv_sensor);
 
     void setup() override;
     float get_setup_priority() const override {
@@ -191,29 +259,29 @@ class Si1151Component : public PollingComponent, public i2c::I2CDevice {
   protected:
     sensor::Sensor *ir_sensor_{nullptr};
     sensor::Sensor *visible_sensor_{nullptr};
-    sensor::Sensor *uv_sensor_{nullptr};
 
-    i2c::ErrorCode read_register_(uint8_t reg, uint8_t &data);
+    i2c::ErrorCode read_register_(uint8_t reg, uint8_t *data);
     i2c::ErrorCode write_register_(uint8_t reg, uint8_t data);
 
-    int16_t Si1151Component::wait_until_ready_(void);
-    int16_t Si1151Component::hard_reset_(void);
-    int16_t Si1151Component::reset_(void);
+    int16_t wait_until_ready_(void);
+    int16_t hard_reset_(void);
+    int16_t reset_(void);
 
-    uint16_t Si1151Component::get_cmd_ctr_(void);
-    uint16_t Si1151Component::check_cmd_ctr_(uint8_t cmd_ctr);
+    int16_t get_cmd_ctr_(void);
+    int16_t check_cmd_ctr_(uint8_t cmd_ctr);
 
-    int16_t Si1151Component::send_command_(uint8_t cmd_code);
-    int16_t Si1151Component::read_parameter_(uint8_t addr, uint8_t &param);
-    int16_t Si1151Component::set_parameter_(uint8_t addr, uint8_t val);
+    int16_t send_command_(uint8_t cmd_code);
+    int16_t read_parameter_(uint8_t addr, uint8_t *param);
+    int16_t set_parameter_(uint8_t addr, uint8_t val);
 
-    int16_t Si1151Component::force();
+    int16_t force(void);
 
     int32_t read_IR_(void);
     int32_t read_visible_(void);
-    float read_UV_(void);
 
   private:
+    bool enable_ir_sensors_ = false;
+    bool enable_visible_sensors_ = false;
     std::bitset<MAX_NUM_CHANNELS> enabled_channels_;
     uint8_t num_channels_ = 0;
 };

@@ -14,27 +14,19 @@ DEPENDENCIES = ["i2c"]
 si1151_ns = cg.esphome_ns.namespace("Si1151")
 Si1151Component = si1151_ns.class_("Si1151Component", cg.PollingComponent, i2c.I2CDevice)
 
-CONF_IR_CHANNEL = "infrared_channel"
-CONF_VISIBLE_CHANNEL = "visible_channel"
-CONF_UV_CHANNEL = "ultraviolet_channel"
+CONF_IR_LIGHT = "infrared_light"
+CONF_VISIBLE_LIGHT = "visible_light"
 
-infrared_channel_schema = sensor.sensor_schema(
+infrared_light_schema = sensor.sensor_schema(
     unit_of_measurement=UNIT_LUX,
     accuracy_decimals=4,
     icon=ICON_LIGHTBULB,
     device_class=DEVICE_CLASS_ILLUMINANCE,
     state_class=STATE_CLASS_MEASUREMENT,
 )
-visible_channel_schema = sensor.sensor_schema(
+visible_light_schema = sensor.sensor_schema(
     unit_of_measurement=UNIT_LUX,
     accuracy_decimals=4,
-    icon=ICON_LIGHTBULB,
-    device_class=DEVICE_CLASS_ILLUMINANCE,
-    state_class=STATE_CLASS_MEASUREMENT,
-)
-ultraviolet_channel_schema = sensor.sensor_schema(
-    unit_of_measurement="UV Index",
-    accuracy_decimals=2,
     icon=ICON_LIGHTBULB,
     device_class=DEVICE_CLASS_ILLUMINANCE,
     state_class=STATE_CLASS_MEASUREMENT,
@@ -44,9 +36,8 @@ CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(Si1151Component),
-            cv.Optional(CONF_IR_CHANNEL): infrared_channel_schema,
-            cv.Optional(CONF_VISIBLE_CHANNEL): visible_channel_schema,
-            cv.Optional(CONF_UV_CHANNEL): ultraviolet_channel_schema,
+            cv.Optional(CONF_IR_LIGHT): infrared_light_schema,
+            cv.Optional(CONF_VISIBLE_LIGHT): visible_light_schema,
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -58,14 +49,9 @@ async def to_code(config):
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)
 
-    if CONF_IR_CHANNEL in config:
-        sens = await sensor.new_sensor(config[CONF_IR_CHANNEL])
+    if CONF_IR_LIGHT in config:
+        sens = await sensor.new_sensor(config[CONF_IR_LIGHT])
         cg.add(var.set_ir_sensor(sens))
-
-    if CONF_VISIBLE_CHANNEL in config:
-        sens = await sensor.new_sensor(config[CONF_VISIBLE_CHANNEL])
+    if CONF_VISIBLE_LIGHT in config:
+        sens = await sensor.new_sensor(config[CONF_VISIBLE_LIGHT])
         cg.add(var.set_visible_sensor(sens))
-
-    if CONF_UV_CHANNEL in config:
-        sens = await sensor.new_sensor(config[CONF_UV_CHANNEL])
-        cg.add(var.set_uv_sensor(sens))
