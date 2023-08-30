@@ -41,11 +41,9 @@ i2c:
 
 sensor:
   - platform: Si1151
-    infrared_channel:
-      name: "Sunlight IR"
-    visible_channel:
-      name: "Sunlight Visible"
-    ultraviolet_channel:
-      name: "Sunlight UV"
+    infrared_light:
+      name: "IR light"
+    visible_light:
+      name: "Visible light"
     address: 0x53
-    update_interval: 60s
+    update_interval: 6s #60s
