@@ -3,8 +3,9 @@ esphome:
 
 external_components:
   - source:
-      type: local
-      path: components/ledSign
+      type: git
+      url: https://github.com/jduanen/ESPHomeComponents
+    components: [ ledSign ]
 
 esp8266:
   board: d1_mini_lite
@@ -44,7 +45,7 @@ time:
   - platform: homeassistant
     id: hass_time
 
-text_sensor:  
+text_sensor:
   - platform: homeassistant
     id: texthassio
     entity_id: input_text.LED_SIGN_freitext
@@ -56,22 +57,13 @@ globals:
     restore_value: no
     initial_value: '1'
 
-led_sign:
+display:
   - platform: ledSign
     cs_pin: D7
     num_chips: 4
     update_interval: 30s
-    scroll_speed: 40ms
+    #scroll_speed: 40ms
     id: mySign
-    pages:
-      - name: "Page 1"
-        duration: 5s
-        components:
-          - text: "This is Page #1"
-      - name: "Page 2"
-        duration: 10s
-        components:
-          - text: "This is Page #2"
 
 font:
   - file: "gfonts://Roboto"
