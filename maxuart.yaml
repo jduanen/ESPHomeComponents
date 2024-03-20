@@ -2,11 +2,11 @@ substitutions:
   devicename: ledsign
   upper_devicename: LEDSign
 
-external_components:
-  - source:
-      type: git
-      url: https://github.com/jduanen/ESPHomeComponents
-    components: [ ledSign ]
+#external_components:
+#  - source:
+#      type: git
+#      url: https://github.com/jduanen/ESPHomeComponents
+#    components: [ ledSign ]
 
 esphome:
   name: ${devicename}
@@ -67,14 +67,13 @@ time:
   - platform: homeassistant
     id: esptime
 
-spi:
-  clk_pin: GPIO7
-  miso_pin: GPIO8
-  mosi_pin: GPIO9
+uart:
+  tx_pin: GPIO21
+  rx_pin: GPIO20
+  baud_rate: 9600
 
 display:
   - platform: max7219uart
-    cs_pin: GPIO4
     num_chips: 11
     lambda: |-
        it.printuart("0123456789");
