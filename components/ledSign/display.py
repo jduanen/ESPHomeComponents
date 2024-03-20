@@ -5,6 +5,8 @@ from esphome.const import CONF_ID, CONF_INTENSITY, CONF_LAMBDA, CONF_NUM_CHIPS
 
 DEPENDENCIES = ["spi"]
 
+AUTO_LOAD = ["display", "spi"]
+
 ledSign_ns = cg.esphome_ns.namespace("ledSign")
 LEDSignComponent = ledSign_ns.class_(
     "LEDSignComponent", cg.PollingComponent, spi.SPIDevice
