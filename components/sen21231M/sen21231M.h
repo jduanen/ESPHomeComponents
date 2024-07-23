@@ -3,6 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
+#include "USPS.h"
 
 // ref:
 // https://github.com/usefulsensors/person_sensor_pico_c/blob/main/person_sensor.h
@@ -70,6 +71,7 @@ class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i
   void dump_config() override;
 
  protected:
+  USPS *usps = new USPS();
   uint8_t read_data_();
 };
 
