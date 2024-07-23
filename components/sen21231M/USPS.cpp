@@ -53,13 +53,13 @@ USPS::USPS(float sampleRate, uint8_t thresh, bool persistFaces, bool eraseFaces,
 bool USPS::setMode(uint8_t mode) {
     if ((mode != USPS_MODE_CONT) && (mode != USPS_MODE_STBY)) {
         //// TODO log error
-        ESP_LOGE("Invalid mode");
+        ESP_LOGE(TAG, "Invalid mode");
         return true;
     }
 
     if (_write(USPS_MODE, mode)) {
         //// TODO log error
-        ESP_LOGE("Failed to write mode");
+        ESP_LOGE(TAG, "Failed to write mode");
         return true;
     }
     _mode = mode;
@@ -191,7 +191,7 @@ int8_t USPS::getFaces(USPSface_t faces[], uint8_t maxFaces) {
         ESP_LOGE(TAG, "Read device failure");
         return -1;
     }
-    numFaces = min(results.numFaces, maxFaces);
+    numFaces = std::min(results.numFaces, maxFaces);
     for (int i = 0; (i < numFaces); i++) {
         if (results.faces[i].boxConfidence >= _confidence) {
             faces[i] = results.faces[i];
@@ -242,7 +242,7 @@ bool USPS::_read(USPSresults_t* results) {
 
     while (index < totalBytes) {
         const int bytesRemaining = totalBytes - index;
-        const int bytesThisChunk = min(bytesRemaining, maxBytesPerChunk);
+        const int bytesThisChunk = std::min(bytesRemaining, maxBytesPerChunk);
         const int endIndex = index + bytesThisChunk;
         const bool isLastChunk = (bytesRemaining <= maxBytesPerChunk);
         Wire.requestFrom(USPS_I2C_ADDRESS, bytesThisChunk, isLastChunk);
