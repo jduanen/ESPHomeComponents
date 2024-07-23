@@ -50,7 +50,7 @@
 // useful constants
 #define USPS_MAX_FACES  7
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+////#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 
 // ref:
