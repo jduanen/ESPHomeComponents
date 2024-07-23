@@ -191,7 +191,7 @@ int8_t USPS::getFaces(USPSface_t faces[], uint8_t maxFaces) {
         ESP_LOGE(TAG, "Read device failure");
         return -1;
     }
-    numFaces = _min(results.numFaces, maxFaces);
+    numFaces = MIN(results.numFaces, maxFaces);
     for (int i = 0; (i < numFaces); i++) {
         if (results.faces[i].boxConfidence >= _confidence) {
             faces[i] = results.faces[i];
@@ -242,7 +242,7 @@ bool USPS::_read(USPSresults_t* results) {
 
     while (index < totalBytes) {
         const int bytesRemaining = totalBytes - index;
-        const int bytesThisChunk = _min(bytesRemaining, maxBytesPerChunk);
+        const int bytesThisChunk = MIN(bytesRemaining, maxBytesPerChunk);
         const int endIndex = index + bytesThisChunk;
         const bool isLastChunk = (bytesRemaining <= maxBytesPerChunk);
         Wire.requestFrom(USPS_I2C_ADDRESS, bytesThisChunk, isLastChunk);

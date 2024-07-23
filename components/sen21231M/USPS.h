@@ -50,6 +50,9 @@
 // useful constants
 #define USPS_MAX_FACES  7
 
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
+
 // ref:
 // https://github.com/esphome/esphome/tree/dev/esphome/components/sen21231/sen21231.h
 
@@ -120,10 +123,6 @@ class USPS {
     uint8_t _confidence;
     bool _ledEnable;
     float _sampleRate;
-
-    inline int _min(int a, int b) {
-      return (a < b) ? a : b;
-    }
 
     bool _read(USPSresults_t* results);
     bool _write(uint8_t addr, uint8_t value);
