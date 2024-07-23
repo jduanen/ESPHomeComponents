@@ -53,13 +53,13 @@ USPS::USPS(float sampleRate, uint8_t thresh, bool persistFaces, bool eraseFaces,
 bool USPS::setMode(uint8_t mode) {
     if ((mode != USPS_MODE_CONT) && (mode != USPS_MODE_STBY)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Invalid mode");
+        ESP_LOGE(ESP_LOG_TAG, "Invalid mode");
         return true;
     }
 
     if (_write(USPS_MODE, mode)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to write mode");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to write mode");
         return true;
     }
     _mode = mode;
@@ -86,13 +86,13 @@ bool USPS::isFaceRecEnabled() {
 bool USPS::registerFace(uint8_t faceId) {
     if (faceId >= USPS_MAX_FACES) {
         //// TODO log error
-        ESP_LOGE(TAG, "Invalid face ID");
+        ESP_LOGE(ESP_LOG_TAG, "Invalid face ID");
         return true;
     }
 
     if (_write(USPS_CALIBRATE_ID, faceId)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to enable registering of face");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to enable registering of face");
         return true;
     }
 
@@ -110,7 +110,7 @@ uint8_t USPS::getRegisteredFaceBitmap() {
 bool USPS::persistRegisteredFaces(bool enable) {
     if (_write(USPS_PERSIST_IDS, enable)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to persist registered faces");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to persist registered faces");
         return true;
     }
 
@@ -125,7 +125,7 @@ bool USPS::isRegisteredFacesPersistant() {
 bool USPS::eraseRegisteredFaces() {
     if (_write(USPS_ERASE_IDS, 0x00)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to erase registered faces");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to erase registered faces");
         return true;
     }
 
@@ -136,7 +136,7 @@ bool USPS::eraseRegisteredFaces() {
 bool USPS::enableLED(bool enable) {
     if (_write(USPS_DEBUG_MODE, enable)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to enable LED");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to enable LED");
         return true;
     }
 
@@ -151,7 +151,7 @@ bool USPS::isLEDEnabled() {
 bool USPS::setConfidenceThreshold(uint8_t thresh) {
     if (thresh > 100) {
         //// TODO log error
-        ESP_LOGE(TAG, "Confidence threshold must be < 100");
+        ESP_LOGE(ESP_LOG_TAG, "Confidence threshold must be < 100");
         return true;
     }
 
@@ -166,12 +166,12 @@ uint8_t USPS::getConfidenceThreshold() {
 int8_t USPS::singleShot(USPSface_t faces[], uint8_t maxFaces) {
     if (_mode != USPS_MODE_STBY) {
         //// TODO log error
-        ESP_LOGE(TAG, "Device must be in Standby mode");
+        ESP_LOGE(ESP_LOG_TAG, "Device must be in Standby mode");
         return true;
     }
     if (_write(USPS_SINGLE_SHOT, 0x00)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to enable LED");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to enable LED");
         return true;
     }
     return getFaces(faces, maxFaces);
@@ -183,12 +183,12 @@ int8_t USPS::getFaces(USPSface_t faces[], uint8_t maxFaces) {
 
     if (maxFaces > USPS_MAX_FACES) {
         //// TODO log warning
-        ESP_LOGW(TAG, "maxFaces larger than HW limit, clipping");
+        ESP_LOGW(ESP_LOG_TAG, "maxFaces larger than HW limit, clipping");
     }
 
     if (_read(&results)) {
         //// TODO log error
-        ESP_LOGE(TAG, "Read device failure");
+        ESP_LOGE(ESP_LOG_TAG, "Read device failure");
         return -1;
     }
     numFaces = MIN(results.numFaces, maxFaces);
@@ -198,7 +198,7 @@ int8_t USPS::getFaces(USPSface_t faces[], uint8_t maxFaces) {
         } else {
             numFaces--;
             if (false) {
-                ESP_LOGI(TAG, "Face below confidence threshold: %d", results.faces[i].boxConfidence);
+                ESP_LOGI(ESP_LOG_TAG, "Face below confidence threshold: %d", results.faces[i].boxConfidence);
             }
         }
     }
@@ -210,9 +210,9 @@ uint8_t USPS::printFaces() {
 
     uint8_t num = getFaces(faces, USPS_MAX_FACES);
     if (num > 0) {
-        ESP_LOGI(TAG, "Number of Faces: %d", num);
+        ESP_LOGI(ESP_LOG_TAG, "Number of Faces: %d", num);
         for (int i = 0; (i < num); i++) {
-            ESP_LOGI(TAG, "Face #: %d", i);
+            ESP_LOGI(ESP_LOG_TAG, "Face #: %d", i);
             printFace(faces[i]);
         }
     }
@@ -220,12 +220,12 @@ uint8_t USPS::printFaces() {
 };
 
 void USPS::printFace(USPSface_t face) {
-    ESP_LOGI(TAG, "  Face detection confidence: %d", face.boxConfidence);
-    ESP_LOGI(TAG, "  Bounding box: [X=%d, Y=%d, W=%d, H=%d", face.boxLeft, face.boxTop, face.boxWidth, face.boxHeight);
+    ESP_LOGI(ESP_LOG_TAG, "  Face detection confidence: %d", face.boxConfidence);
+    ESP_LOGI(ESP_LOG_TAG, "  Bounding box: [X=%d, Y=%d, W=%d, H=%d", face.boxLeft, face.boxTop, face.boxWidth, face.boxHeight);
     if (face.id >= 0) {
-        ESP_LOGI(TAG, "    Face ID: %d", face.id);
+        ESP_LOGI(ESP_LOG_TAG, "    Face ID: %d", face.id);
     }
-    ESP_LOGI(TAG, "  Is facing: %d", face.isFacing);
+    ESP_LOGI(ESP_LOG_TAG, "  Is facing: %d", face.isFacing);
 }
 
 //// TODO decide if this should be inline
@@ -248,7 +248,7 @@ bool USPS::_read(USPSresults_t* results) {
         Wire.requestFrom(USPS_I2C_ADDRESS, bytesThisChunk, isLastChunk);
         for (; index < endIndex; ++index) {
             if (Wire.available() < 1) {
-                ESP_LOGI(TAG, "Only %d bytes available on I2C, but need %d", index, bytesThisChunk);
+                ESP_LOGI(ESP_LOG_TAG, "Only %d bytes available on I2C, but need %d", index, bytesThisChunk);
                 return true;
             }
             resultsBytes[index] = Wire.read();
@@ -262,12 +262,12 @@ bool USPS::_write(uint8_t addr, uint8_t value) {
 
     if (Wire.write(addr) != 1) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to write register address");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to write register address");
         return true;
     }
     if (Wire.write(value) != 1) {
         //// TODO log error
-        ESP_LOGE(TAG, "Failed to write register value");
+        ESP_LOGE(ESP_LOG_TAG, "Failed to write register value");
         return true;
     }
 
