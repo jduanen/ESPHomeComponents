@@ -7,7 +7,7 @@ namespace sen21231M_sensor {
 static const char *const TAG = "sen21231M_sensor.sensor";
 
 void Sen21231MSensor::update() {
-  int numFaces = this->read_data_();
+  uint8_t numFaces = this->read_data_();
   ESP_LOGD(TAG, "'%s': # Faces Detected=%d", this->get_name().c_str(), numFaces);
   this->publish_state(numFaces);
 }
@@ -22,7 +22,7 @@ void Sen21231MSensor::dump_config() {
   LOG_UPDATE_INTERVAL(this);
 }
 
-void Sen21231MSensor::read_data_() {
+uint8_t Sen21231MSensor::read_data_() {
   person_sensor_results_t results;
   this->read_bytes(PERSON_SENSOR_I2C_ADDRESS, (uint8_t *) &results, sizeof(results));
   ESP_LOGD(TAG, "SEN21231M: %d faces detected", results.num_faces);
@@ -30,6 +30,7 @@ void Sen21231MSensor::read_data_() {
   if (results.num_faces == 1) {
     ESP_LOGD(TAG, "SEN21231M: is facing towards camera: %d", results.faces[0].is_facing);
   }
+  return results.num_faces;
 }
 
 }  // namespace sen21231M_sensor
