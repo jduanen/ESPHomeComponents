@@ -11,7 +11,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <algorithm>
 
 
 #define TAG   "USPS"
@@ -121,6 +120,10 @@ class USPS {
     uint8_t _confidence;
     bool _ledEnable;
     float _sampleRate;
+
+    inline int _min(int a, int b) {
+      return (a < b) ? a : b;
+    }
 
     bool _read(USPSresults_t* results);
     bool _write(uint8_t addr, uint8_t value);
