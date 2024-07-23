@@ -6,7 +6,11 @@ namespace sen21231_sensor {
 
 static const char *const TAG = "sen21231_sensor.sensor";
 
-void Sen21231Sensor::update() { this->read_data_(); }
+void Sen21231Sensor::update() {
+  int numFaces = this->read_data_();
+  ESP_LOGD(TAG, "'%s': # Faces Detected=%d", this->get_name().c_str(), numFaces);
+  this->publish_state(numFaces);
+}
 
 void Sen21231Sensor::dump_config() {
   ESP_LOGCONFIG(TAG, "SEN21231:");
