@@ -13,6 +13,8 @@
 #include <stdint.h>
 
 
+#define TAG   "USPS"
+
 // N.B. must define SENSOR_VERSION  10 // 11 // 20
 
 #if (SENSOR_VERSION == 10)
