@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <algorithm.h>
 
 
 #define TAG   "USPS"
