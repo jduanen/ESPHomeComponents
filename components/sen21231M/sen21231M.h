@@ -70,7 +70,7 @@ class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i
   void dump_config() override;
 
  protected:
-  void read_data_();
+  uint8_t read_data_();
 };
 
 }  // namespace sen21231M_sensor
