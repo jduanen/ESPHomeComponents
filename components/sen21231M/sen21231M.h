@@ -72,6 +72,7 @@ class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i
   void dump_config() override;
 
  protected:
+  const uint8_t MIN_CONFIDENCE = 85;
   USPS *_usps;
 };
 
