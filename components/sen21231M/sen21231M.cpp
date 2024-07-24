@@ -9,6 +9,7 @@ static const char *const TAG = "sen21231M_sensor.sensor";
 
 
 void Sen21231MSensor::setup() {
+  ESP_LOGI(TAG, "SETUP");
   _usps = new USPS();
 
   uint16_t tries = 20;
@@ -21,6 +22,7 @@ void Sen21231MSensor::setup() {
     if (tries-- <= 0) {
         ESP_LOGE(TAG, "Failed to initialize the SEN21231M");
         //// TODO reboot?
+        while (1) {;}
         return;
     }
   }
