@@ -75,9 +75,10 @@ class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i
 
  protected:
   const uint8_t MIN_CONFIDENCE = 85;
+  uint16_t _i;
 
 //  USPS *_usps;
-  USPS *_usps = new USPS();
+//  USPS *_usps = new USPS();
 };
 
 }  // namespace sen21231M_sensor

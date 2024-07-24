@@ -31,6 +31,7 @@ void Sen21231MSensor::setup() {
 }
 */
 
+/*
 void Sen21231MSensor::update() {
   USPSface_t faces[USPS_MAX_FACES];
   int8_t numFaces;
@@ -50,6 +51,13 @@ void Sen21231MSensor::update() {
 
   ESP_LOGD(TAG, "'%s': # Faces Detected=%d", this->get_name().c_str(), numFaces);
   numberOfFaces->publish_state(numFaces);
+}
+*/
+
+void Sen21231MSensor::update() {
+  ESP_LOGI(TAG, "UPDATE: %d", _i);
+  numberOfFaces->publish_state(_i);
+  i++;
 }
 
 void Sen21231MSensor::dump_config() {
