@@ -8,6 +8,7 @@ namespace sen21231M_sensor {
 static const char *const TAG = "sen21231M_sensor.sensor";
 
 
+/*
 void Sen21231MSensor::setup() {
   ESP_LOGI(TAG, "SETUP");
   _usps = new USPS();
@@ -28,6 +29,7 @@ void Sen21231MSensor::setup() {
   }
   ESP_LOGI(TAG, "SETUP DONE");
 }
+*/
 
 void Sen21231MSensor::update() {
   USPSface_t faces[USPS_MAX_FACES];
