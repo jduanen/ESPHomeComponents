@@ -69,14 +69,15 @@ class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i
  public:
   Sensor *numberOfFaces;
 
-  void setup() override;
+//  void setup() override;
   void update() override;
   void dump_config() override;
 
  protected:
   const uint8_t MIN_CONFIDENCE = 85;
 
-  USPS *_usps;
+//  USPS *_usps;
+  USPS *_usps = new USPS();
 };
 
 }  // namespace sen21231M_sensor
