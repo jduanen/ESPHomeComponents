@@ -36,6 +36,8 @@
 
 #include "USPS.h"
 
+#define TAG     "USPS"
+
 
 USPS::USPS(float sampleRate, uint8_t thresh, bool persistFaces, bool eraseFaces,
            bool ledEnable) {
