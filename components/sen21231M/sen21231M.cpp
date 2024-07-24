@@ -1,4 +1,4 @@
-#include "sen21231.h"
+#include "sen21231M.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
