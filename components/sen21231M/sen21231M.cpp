@@ -26,6 +26,7 @@ void Sen21231MSensor::setup() {
         return;
     }
   }
+  ESP_LOGI(TAG, "SETUP DONE");
 }
 
 void Sen21231MSensor::update() {
