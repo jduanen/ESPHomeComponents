@@ -11,13 +11,14 @@ static const char *const TAG = "sen21231M_sensor.sensor";
 void Sen21231MSensor::setup() {
   _usps = new USPS();
 
+  uint16_t tries = 20;
   int8_t n = -1;
   while (n < 0) {
     USPSface_t faces[1];
     delay(500);
     _usps = new USPS();
     n = _usps->getFaces(faces, 1);
-    if (trys-- <= 0) {
+    if (tries-- <= 0) {
         ESP_LOGE(TAG, "Failed to initialize the SEN21231M");
         //// TODO reboot?
         return;
