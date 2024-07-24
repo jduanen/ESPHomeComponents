@@ -18,17 +18,10 @@ void Sen21231MSensor::setup() {
     _usps = new USPS();
     n = _usps->getFaces(faces, 1);
     if (trys-- <= 0) {
-        return true;
+        ESP_LOGE(TAG, "Failed to initialize the SEN21231M");
+        //// TODO reboot?
+        return;
     }
-  }
-  return false;
-};
-
-
-
-  if (_usps->init()) {
-    ESP_LOGE(TAG, "Failed to initialize the SEN21231M");
-    //// TODO reboot?
   }
 }
 

@@ -72,8 +72,7 @@ class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i
   void dump_config() override;
 
  protected:
-  USPS *usps;
-  uint8_t read_data_();
+  USPS *_usps;
 };
 
 }  // namespace sen21231M_sensor
