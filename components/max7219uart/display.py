@@ -1,10 +1,10 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import display, spi
+from esphome.components import display, uart
 from esphome.const import CONF_ID, CONF_INTENSITY, CONF_LAMBDA, CONF_NUM_CHIPS
 
-CODEOWNERS = ["@rspaargaren"]
-DEPENDENCIES = ["spi"]
+CODEOWNERS = ["@rspaargaren" "@jduanen"]
+DEPENDENCIES = ["uart"]
 
 CONF_ROTATE_CHIP = "rotate_chip"
 CONF_FLIP_X = "flip_x"
@@ -39,7 +39,7 @@ CHIP_MODES = {
 
 max7219_ns = cg.esphome_ns.namespace("max7219uart")
 MAX7219Component = max7219_ns.class_(
-    "MAX7219Component", spi.SPIDevice, display.DisplayBuffer, cg.PollingComponent
+    "MAX7219Component", uart.UARTDevice, display.DisplayBuffer, cg.PollingComponent
 )
 MAX7219ComponentRef = MAX7219Component.operator("ref")
 
@@ -72,13 +72,13 @@ CONFIG_SCHEMA = (
         }
     )
     .extend(cv.polling_component_schema("500ms"))
-    .extend(spi.spi_device_schema(cs_pin_required=True))
+    .extend(uart.UART_DEVICE_SCHEMA)
 )
 
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    await spi.register_spi_device(var, config)
+    await uart.register_uart_device(var, config)
     await display.register_display(var, config)
 
     cg.add(var.set_num_chips(config[CONF_NUM_CHIPS]))
