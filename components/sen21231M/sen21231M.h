@@ -3,7 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
-#include "USPS.h"
+//#include "USPS.h"
 
 // ref:
 // https://github.com/usefulsensors/person_sensor_pico_c/blob/main/person_sensor.h
