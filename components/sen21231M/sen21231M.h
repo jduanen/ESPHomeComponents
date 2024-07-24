@@ -67,11 +67,12 @@ using person_sensor_results_t = struct __attribute__((__packed__)) {
 
 class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i2c::I2CDevice {
  public:
+  void setup() override;
   void update() override;
   void dump_config() override;
 
  protected:
-  USPS *usps = new USPS();
+  USPS *usps;
   uint8_t read_data_();
 };
 
