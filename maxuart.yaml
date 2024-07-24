@@ -72,14 +72,21 @@ uart:
   rx_pin: GPIO20
   baud_rate: 9600
 
-display:
-  - platform: max7219uart
-    num_chips: 11
-    lambda: |-
-       it.printuart("0123456789");
-#      it.print(0, 0, id(roboto), "HELLO!");
+spi:
+  clk_pin:  GPIO7
+  miso_pin: GPIO8
+  mosi_pin: GPIO9
 
-#font:
-#  - file: "gfonts://Roboto"
-#    id: roboto
-#    size: 14
+display:
+  - platform: max7219digit
+    cs_pin: 11
+    num_chips: 11
+    update_interval: 15s
+    lambda: |-
+      it.printdigit("0123456789");
+      it.print(0, 0, id(roboto), "HELLO!");
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto
+    size: 14
