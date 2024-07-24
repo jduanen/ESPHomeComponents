@@ -7,8 +7,8 @@ namespace sen21231M_sensor {
 static const char *const TAG = "sen21231M_sensor.sensor";
 
 void Sen21231MSensor::setup() {
-  _usps = new USPS();
-  if (_usps->init()) {
+  this->_usps = new USPS();
+  if (this->_usps->init()) {
     ESP_LOGE(TAG, "Failed to initialize the SEN21231M");
     //// TODO reboot?
   }
@@ -18,7 +18,7 @@ void Sen21231MSensor::update() {
   USPSface_t faces[USPS_MAX_FACES];
   int8_t numFaces;
 
-  int8_t n = usps->getFaces(faces, USPS_MAX_FACES);
+  int8_t n = this->_usps->getFaces(faces, USPS_MAX_FACES);
   numFaces = n;
   for (int i = 0; (i < n); i++) {
     if (!faces[i].isFacing || (faces[i].boxConfidence < MIN_CONFIDENCE)) {
@@ -27,7 +27,7 @@ void Sen21231MSensor::update() {
   }
   if (numFaces < 0) {
     ESP_LOGE(TAG, "Failed to read SEN21231M, resetting...");
-    _usps = new USPS();
+    this->_usps = new USPS();
     return;
   }
 
