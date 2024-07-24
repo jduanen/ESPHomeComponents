@@ -50,8 +50,6 @@
 // useful constants
 #define USPS_MAX_FACES  7
 
-////#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
 
 // ref:
 // https://github.com/esphome/esphome/tree/dev/esphome/components/sen21231/sen21231.h
