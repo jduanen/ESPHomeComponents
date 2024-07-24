@@ -3,13 +3,12 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
-//#include "USPS.h"
 
 // ref:
 // https://github.com/usefulsensors/person_sensor_pico_c/blob/main/person_sensor.h
 
 namespace esphome {
-namespace sen21231M_sensor {
+namespace sen21231_sensor {
 // The I2C address of the person sensor board.
 static const uint8_t PERSON_SENSOR_I2C_ADDRESS = 0x62;
 static const uint8_t PERSON_SENSOR_REG_MODE = 0x01;
@@ -65,21 +64,14 @@ using person_sensor_results_t = struct __attribute__((__packed__)) {
   uint16_t checksum;                                          // Bytes 38-39.
 };
 
-class Sen21231MSensor : public sensor::Sensor, public PollingComponent, public i2c::I2CDevice {
+class Sen21231Sensor : public sensor::Sensor, public PollingComponent, public i2c::I2CDevice {
  public:
-  Sensor *numberOfFaces;
-
-//  void setup() override;
   void update() override;
   void dump_config() override;
 
  protected:
-  const uint8_t MIN_CONFIDENCE = 85;
-  uint16_t _i;
-
-//  USPS *_usps;
-//  USPS *_usps = new USPS();
+  void read_data_();
 };
 
-}  // namespace sen21231M_sensor
+}  // namespace sen21231_sensor
 }  // namespace esphome

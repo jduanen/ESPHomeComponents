@@ -1,74 +1,32 @@
-#include "sen21231M.h"
+#include "sen21231.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace sen21231M_sensor {
+namespace sen21231_sensor {
 
+static const char *const TAG = "sen21231_sensor.sensor";
 
-static const char *const TAG = "sen21231M_sensor.sensor";
+void Sen21231Sensor::update() { this->read_data_(); }
 
-
-/*
-void Sen21231MSensor::setup() {
-  ESP_LOGI(TAG, "SETUP");
-  _usps = new USPS();
-
-  uint16_t tries = 20;
-  int8_t n = -1;
-  while (n < 0) {
-    USPSface_t faces[1];
-    delay(500);
-    _usps = new USPS();
-    n = _usps->getFaces(faces, 1);
-    if (tries-- <= 0) {
-        ESP_LOGE(TAG, "Failed to initialize the SEN21231M");
-        //// TODO reboot?
-        while (1) {;}
-        return;
-    }
-  }
-  ESP_LOGI(TAG, "SETUP DONE");
-}
-*/
-
-/*
-void Sen21231MSensor::update() {
-  USPSface_t faces[USPS_MAX_FACES];
-  int8_t numFaces;
-
-  int8_t n = _usps->getFaces(faces, USPS_MAX_FACES);
-  numFaces = n;
-  for (int i = 0; (i < n); i++) {
-    if (!faces[i].isFacing || (faces[i].boxConfidence < MIN_CONFIDENCE)) {
-      numFaces--;
-    }
-  }
-  if (numFaces < 0) {
-    ESP_LOGE(TAG, "Failed to read SEN21231M, resetting...");
-    _usps = new USPS();
-    return;
-  }
-
-  ESP_LOGD(TAG, "'%s': # Faces Detected=%d", this->get_name().c_str(), numFaces);
-  numberOfFaces->publish_state(numFaces);
-}
-*/
-
-void Sen21231MSensor::update() {
-  ESP_LOGI(TAG, "UPDATE: %d", _i);
-  numberOfFaces->publish_state(_i);
-  _i++;
-}
-
-void Sen21231MSensor::dump_config() {
-  ESP_LOGCONFIG(TAG, "SEN21231M:");
+void Sen21231Sensor::dump_config() {
+  ESP_LOGCONFIG(TAG, "SEN21231:");
   LOG_I2C_DEVICE(this);
   if (this->is_failed()) {
-    ESP_LOGE(TAG, "Communication with SEN21231M failed!");
+    ESP_LOGE(TAG, "Communication with SEN21231 failed!");
   }
-  ESP_LOGI(TAG, "SEN21231M: %s", this->is_failed() ? "FAILED" : "OK");
+  ESP_LOGI(TAG, "SEN21231: %s", this->is_failed() ? "FAILED" : "OK");
   LOG_UPDATE_INTERVAL(this);
 }
 
-}  // namespace sen21231M_sensor
+void Sen21231Sensor::read_data_() {
+  person_sensor_results_t results;
+  this->read_bytes(PERSON_SENSOR_I2C_ADDRESS, (uint8_t *) &results, sizeof(results));
+  ESP_LOGD(TAG, "SEN21231: %d faces detected", results.num_faces);
+  this->publish_state(results.num_faces);
+  if (results.num_faces == 1) {
+    ESP_LOGD(TAG, "SEN21231: is facing towards camera: %d", results.faces[0].is_facing);
+  }
+}
+
+}  // namespace sen21231_sensor
 }  // namespace esphome
