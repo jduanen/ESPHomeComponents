@@ -57,7 +57,7 @@ void Sen21231MSensor::update() {
 void Sen21231MSensor::update() {
   ESP_LOGI(TAG, "UPDATE: %d", _i);
   numberOfFaces->publish_state(_i);
-  i++;
+  _i++;
 }
 
 void Sen21231MSensor::dump_config() {
