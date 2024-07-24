@@ -52,20 +52,6 @@ USPS::USPS(float sampleRate, uint8_t thresh, bool persistFaces, bool eraseFaces,
     }
 };
 
-bool USPS::init(uint32_t trys=10000) {
-    int8_t n = -1;
-    while (n < 0) {
-        USPSface_t faces[1];
-        delay(500);
-        usps = new USPS();
-        n = usps->getFaces(faces, 1);
-        if (trys-- <= 0) {
-            return true;
-        }
-    }
-    return false;
-};
-
 bool USPS::setMode(uint8_t mode) {
     if ((mode != USPS_MODE_CONT) && (mode != USPS_MODE_STBY)) {
         //// TODO log error

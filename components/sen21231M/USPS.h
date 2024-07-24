@@ -83,8 +83,6 @@ class USPS {
          bool persistFaces=false, bool eraseFaces=false,
          bool ledEnable=true);
 
-    bool init(uint32_t trys);
-
     bool setMode(uint8_t mode=USPS_MODE_CONT);
     uint8_t getMode();
 
