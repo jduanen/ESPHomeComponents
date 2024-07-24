@@ -13,8 +13,6 @@
 #include <stdint.h>
 
 
-#define ESP_LOG_TAG   "USPS"
-
 // N.B. must define SENSOR_VERSION  10 // 11 // 20
 
 #if (SENSOR_VERSION == 10)
@@ -84,6 +82,8 @@ class USPS {
     USPS(float sampleRate=5.0, uint8_t thresh=DEF_CONFIDENCE,
          bool persistFaces=false, bool eraseFaces=false,
          bool ledEnable=true);
+
+    bool init(uint32_t trys);
 
     bool setMode(uint8_t mode=USPS_MODE_CONT);
     uint8_t getMode();
