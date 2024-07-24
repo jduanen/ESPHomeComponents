@@ -44,7 +44,7 @@ void Sen21231MSensor::update() {
   }
 
   ESP_LOGD(TAG, "'%s': # Faces Detected=%d", this->get_name().c_str(), numFaces);
-  this->publish_state(numFaces);
+  numberOfFaces->publish_state(numFaces);
 }
 
 void Sen21231MSensor::dump_config() {
