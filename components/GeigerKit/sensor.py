@@ -12,8 +12,7 @@ geigerkit_sensor_ns = cg.esphome_ns.namespace("GeigerKit_sensor")
 
 GeigerKitSensor = geigerkit_sensor_ns.class_(
     "GeigerKitSensor",
-    cg.Component,
-    sensor.Sensor,
+    cg.PollingComponent,
     uart.UARTDevice
 )
 
@@ -23,7 +22,9 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(GeigerKitSensor),
         }
     )
+    .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
+    .extend(cv.polling_component_schema("never")),
 )
 
 '''
@@ -38,7 +39,6 @@ CONFIG_SCHEMA = sensor.sensor_schema(
 )
 '''
 
-'''
 FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
     "GeigerKit",
     baud_rate=9600,
@@ -48,7 +48,6 @@ FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
     parity=None,
     stop_bits=1,
 )
-'''
 
 async def to_code(config):
     var = await sensor.new_sensor(config)
