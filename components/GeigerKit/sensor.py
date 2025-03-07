@@ -12,7 +12,7 @@ geigerkit_sensor_ns = cg.esphome_ns.namespace("GeigerKit_sensor")
 
 GeigerKitSensor = geigerkit_sensor_ns.class_(
     "GeigerKitSensor",
-    cg.PollingComponent,
+    cg.Component,
     uart.UARTDevice
 )
 
@@ -24,7 +24,6 @@ CONFIG_SCHEMA = (
     )
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
-    .extend(cv.polling_component_schema("never")),
 )
 
 '''
