@@ -27,7 +27,7 @@ CONFIG_SCHEMA = sensor.sensor_schema(
 )
 
 FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
-    "geigerkit",
+    "GeigerKit",
     baud_rate=9600,
     require_tx=False,
     require_rx=True,
