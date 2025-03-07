@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 #import esphome.config_validation as cv
 from esphome.components import sensor, uart
-from esphome.const import (ICON_RADIOACTIVE, STAT_CLASS_MEASUREMENT)
+from esphome.const import (ICON_RADIOACTIVE)
 
 CONF_MY_CUSTOM_ID = "GeigerKit_id"
 
