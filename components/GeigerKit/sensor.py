@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 #import esphome.config_validation as cv
 from esphome.components import sensor, uart
-from esphome.const import ICON_RADIOACTIVE
+from esphome.const import (ICON_RADIOACTIVE, STAT_CLASS_MEASUREMENT)
 
 CONF_MY_CUSTOM_ID = "GeigerKit_id"
 
@@ -24,6 +24,16 @@ CONFIG_SCHEMA = sensor.sensor_schema(
         accuracy_decimals=1
     )
     .extend(uart.UART_DEVICE_SCHEMA)
+)
+
+FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
+    "geigerkit",
+    baud_rate=9600,
+    require_tx=False,
+    require_rx=True,
+    data_bits=8,
+    parity=None,
+    stop_bits=1,
 )
 
 async def to_code(config):
