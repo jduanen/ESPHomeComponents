@@ -10,8 +10,8 @@ DEPENDENCIES = []
 AUTO_LOAD = []
 MULTI_CONF = False
 
-ns = cg.esphome_ns.namespace("geigerkit_sensor_ns")
-GeigerKit = ns.class_("GeigerKit", cg.Component)
+ns = cg.esphome_ns.namespace("geigerkit_ns")
+GeigerKit = ns.class_("geigerkit", cg.Component)
 
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {

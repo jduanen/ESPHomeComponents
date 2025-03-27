@@ -3,17 +3,12 @@
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace geigerkit_sensor_ns {
+namespace geigerkit_ns {
 
 static const char *TAG = "geigerkit";
 
 geigerkit::geigerkit() {
   ESP_LOGD(TAG, "Constructor");
-}
-
-geigerkit::geigerkit(const std::string &custom_id) {
-  ESP_LOGD(TAG, "Constructor");
-  set_custom_id(custom_id);
 }
 
 void geigerkit::setup() {
@@ -47,5 +42,5 @@ void geigerkit::check_buffer_() {
 }
 
 
-}  // namespace geigerkit_sensor_ns
+}  // namespace geigerkit_ns
 }  // namespace esphome

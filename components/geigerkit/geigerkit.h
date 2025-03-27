@@ -5,13 +5,11 @@
 //#include "esphome/components/uart/uart.h"
 
 namespace esphome {
-namespace geigerkit_sensor_ns {
+namespace geigerkit_ns {
 
-//class GeigerKitSensor : public sensor::Sensor, public Component, public uart::UARTDevice {
 class geigerkit : public Component {
  public:
   geigerkit();
-  geigerkit(const std::string &custom_id);
 
   void set_custom_id(const std::string &custom_id) { custom_id_ = custom_id; }
 
