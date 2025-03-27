@@ -6,6 +6,9 @@ namespace esphome {
 namespace geigerkit_ns {
 
 static const char *TAG = "GeigerKit";
+GeigerKitComponent::GeigerKitComponent() {
+  ESP_LOGD(TAG, "Constructing");
+}
 
 void GeigerKitComponent::setup() {
   ESP_LOGD(TAG, "Setting up GeigerKit");
