@@ -16,22 +16,21 @@ void GeigerKitComponent::setup() {
 
 void GeigerKitComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "GeigerKit:");
-  this->check_uart_settings(9600);
+//  this->check_uart_settings(9600);
 }
 
 void GeigerKitComponent::loop() {
-  /*
   uint8_t data;
 
   while (this->available() != 0) {
     this->read_byte(&data);
     if (this->buffer_.empty() && (data != 0xff))
       continue;
+    ESP_LOGD(TAG, "Data: 0x%x", data);
     this->buffer_.push_back(data);
     if (this->buffer_.size() == 4)
       this->check_buffer_();
   }
-  */
 }
 
 void GeigerKitComponent::check_buffer_() {
