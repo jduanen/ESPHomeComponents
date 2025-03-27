@@ -24,7 +24,7 @@ void GeigerKitSensor::setup() {
 
 void GeigerKitSensor::dump_config() { 
   ESP_LOGCONFIG(TAG, "GeigerKitSensor:");
-  LOG_LOGCONFIG(TAG, "  Custom ID: %s", this->custom_id_.c_str());
+  ESP_LOGCONFIG(TAG, "  Custom ID: %s", this->custom_id_.c_str());
 }
 
 /*
