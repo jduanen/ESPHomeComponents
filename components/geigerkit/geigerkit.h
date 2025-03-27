@@ -1,28 +1,27 @@
 #pragma once
 
+#include "esphome.h"
 #include "esphome/core/component.h"
 //#include "esphome/components/sensor/sensor.h"
-//#include "esphome/components/uart/uart.h"
+#include "esphome/components/uart/uart.h"
 
 namespace esphome {
 namespace geigerkit_ns {
 
-class geigerkit : public Component {
- public:
-  geigerkit();
+class GeigerKitComponent: public Component, public uart::UARTDevice {
+  public:
+    GeigerKitComponent() = default;
 
-  void set_custom_id(const std::string &custom_id) { custom_id_ = custom_id; }
+    void setup() override;
+    void dump_config() override;
+    void loop() override;
+    float get_setup_priority() const { return setup_priority::DATA; };
 
-  void setup() override;
-  void dump_config() override;
-//  void loop() override;
+  protected:
+    void check_buffer_();
 
- protected:
-  std::string custom_id_ = "NO_ID";
-  void check_buffer_();
-
-  std::vector<uint8_t> buffer_;
+    std::vector<uint8_t> buffer_;
 };
 
-}  // namespace geigerkit_sensor_ns
+}  // namespace geigerkit_ns
 }  // namespace esphome

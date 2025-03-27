@@ -11,7 +11,7 @@ AUTO_LOAD = []
 MULTI_CONF = False
 
 ns = cg.esphome_ns.namespace("geigerkit_ns")
-GeigerKit = ns.class_("geigerkit", cg.Component)
+GeigerKit = ns.class_("GeigerKitComponent", cg.Component)
 
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
