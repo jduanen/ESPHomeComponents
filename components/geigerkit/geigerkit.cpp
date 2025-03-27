@@ -20,7 +20,9 @@ void GeigerKitComponent::dump_config() {
 }
 
 void GeigerKitComponent::loop() {
+  /*
   uint8_t data;
+  ESP_LOGD(TAG, "Loop");
 
   while (this->available() != 0) {
     this->read_byte(&data);
@@ -30,11 +32,12 @@ void GeigerKitComponent::loop() {
     if (this->buffer_.size() == 4)
       this->check_buffer_();
   }
+  */
 }
 
 void GeigerKitComponent::check_buffer_() {
-  ESP_LOGW(TAG, "Data read from sensor: %s", format_hex_pretty(this->buffer_).c_str());
-  this->buffer_.clear();
+  ESP_LOGD(TAG, "Data read from sensor: %s", format_hex_pretty(this->buffer_).c_str());
+//  this->buffer_.clear();
 }
 
 
