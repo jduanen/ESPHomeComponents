@@ -24,11 +24,22 @@ void GeigerKitSensor::loop() {
 
   while (this->available() != 0) {
     this->read_byte(&data);
-    ESP_LOGD(TAG, "Data: 0x%x", data);
     if (data == '\n') continue;
     if (data == '\r') {
-      //// TODO publish data
+      int countsPerMin;
+      float uSvPerHr, volts;
       ESP_LOGD(TAG, "Str: %s", this->buffer_.data());
+      int n = sscanf(reinterpret_cast<const char*>(this->buffer_.data()),
+                     "%d,%f,%f", &countsPerMin, &uSvPerHr, &volts);
+      if (n != 3) {
+          ESP_LOGE("custom", "Failed to read from GK sensor board: %s", this->buffer_.data());
+      }
+      ESP_LOGD(TAG, "cpm: %d, Sv/Hr: %f, volts: %f");
+      /*
+      this->sensor->publish_state(countsPerMin);
+      this->sensor->publish_state(uSvPerHr);
+      this->sensor->publish_state(volts);
+      */
       this->buffer_.clear();
       continue;
     }
