@@ -8,8 +8,7 @@
 namespace esphome {
 namespace geigerkit_ns {
 
-//class GeigerKitComponent: public Component, public uart::UARTDevice {
-class GeigerKitComponent: public Component {
+class GeigerKitComponent: public Component, public uart::UARTDevice {
   public:
     GeigerKitComponent() = default;
 //    GeigerKitComponent();

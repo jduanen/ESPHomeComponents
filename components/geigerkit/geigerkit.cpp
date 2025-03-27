@@ -7,12 +7,6 @@ namespace geigerkit_ns {
 
 static const char *TAG = "GeigerKit";
 
-/*
-GeigerKitComponent::GeigerKitComponent() {
-  ESP_LOGD(TAG, "Constructing");
-}
-*/
-
 void GeigerKitComponent::setup() {
   ESP_LOGD(TAG, "Setting up GeigerKit");
   // Rx-only, no setup needed
@@ -26,8 +20,6 @@ void GeigerKitComponent::dump_config() {
 }
 
 void GeigerKitComponent::loop() {
-  ESP_LOGD(TAG, "Loop");
-
   /*
   uint8_t data;
 
@@ -44,7 +36,7 @@ void GeigerKitComponent::loop() {
 
 void GeigerKitComponent::check_buffer_() {
   ESP_LOGD(TAG, "Data read from sensor: %s", format_hex_pretty(this->buffer_).c_str());
-//  this->buffer_.clear();
+  this->buffer_.clear();
 }
 
 
