@@ -22,9 +22,9 @@ void GeigerKitComponent::dump_config() {
 void GeigerKitComponent::loop() {
   uint8_t data;
 
+/*
   while (this->available() != 0) {
     ESP_LOGD(TAG, "DA");
-/*
     this->read_byte(&data);
     if (this->buffer_.empty() && (data != 0xff))
       continue;
@@ -32,8 +32,8 @@ void GeigerKitComponent::loop() {
     this->buffer_.push_back(data);
     if (this->buffer_.size() == 4)
       this->check_buffer_();
-*/
   }
+*/
 }
 
 void GeigerKitComponent::check_buffer_() {
