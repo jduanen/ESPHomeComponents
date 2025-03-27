@@ -11,6 +11,7 @@ namespace geigerkit_sensor_ns {
 class GeigerKitSensor : public Component {
  public:
   GeigerKitSensor();
+  GeigerKitSensor(const std::string &custom_id);
 
   void set_custom_id(const std::string &custom_id) { custom_id_ = custom_id; }
 

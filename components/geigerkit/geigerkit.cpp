@@ -7,6 +7,10 @@ namespace geigerkit_sensor_ns {
 
 static const char *TAG = "GeigerKitSensor";
 
+GeigerKitSensor::GeigerKitSensor() {
+  ESP_LOGD(TAG, "Constructor");
+}
+
 GeigerKitSensor::GeigerKitSensor(const std::string &custom_id) {
   ESP_LOGD(TAG, "Constructor");
   set_custom_id(custom_id);
