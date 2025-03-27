@@ -5,30 +5,30 @@
 namespace esphome {
 namespace geigerkit_sensor_ns {
 
-static const char *TAG = "GeigerKitSensor";
+static const char *TAG = "geigerkit";
 
-GeigerKitSensor::GeigerKitSensor() {
+geigerkit::geigerkit() {
   ESP_LOGD(TAG, "Constructor");
 }
 
-GeigerKitSensor::GeigerKitSensor(const std::string &custom_id) {
+geigerkit::geigerkit(const std::string &custom_id) {
   ESP_LOGD(TAG, "Constructor");
   set_custom_id(custom_id);
 }
 
-void GeigerKitSensor::setup() {
-  ESP_LOGD(TAG, "Setting up GeigerKitSensor with custom_id: %s", this->custom_id_.c_str());
+void geigerkit::setup() {
+  ESP_LOGD(TAG, "Setting up geigerkit with custom_id: %s", this->custom_id_.c_str());
   //// TODO poke the device and see if it responds as expected
   if (false) mark_failed();
 }
 
-void GeigerKitSensor::dump_config() { 
-  ESP_LOGCONFIG(TAG, "GeigerKitSensor:");
+void geigerkit::dump_config() {
+  ESP_LOGCONFIG(TAG, "geigerkit:");
   ESP_LOGCONFIG(TAG, "  Custom ID: %s", this->custom_id_.c_str());
 }
 
 /*
-void GeigerKitSensor::loop() {
+void geigerkit::loop() {
   uint8_t data;
   while (this->available() > 0) {
     this->read_byte(&data);
@@ -41,7 +41,7 @@ void GeigerKitSensor::loop() {
 }
 */
 
-void GeigerKitSensor::check_buffer_() {
+void geigerkit::check_buffer_() {
   ESP_LOGW(TAG, "Data read from sensor: %s", format_hex_pretty(this->buffer_).c_str());
   this->buffer_.clear();
 }
