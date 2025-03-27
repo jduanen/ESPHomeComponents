@@ -7,6 +7,7 @@ from esphome.const import (
     STATE_CLASS_MEASUREMENT
 )
 
+CODEOWNERS = ["@jduanen"]
 DEPENDENCIES = ["uart"]
 AUTO_LOAD = []
 MULTI_CONF = False
