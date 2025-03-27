@@ -19,10 +19,27 @@ GeigerKitSensor = ns.class_(
     cg.Component
 )
 
+
+
 CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(GeigerKitSensor),
+            cv.Optional("cpm"): sensor.sensor_schema(
+                icon=ICON_RADIOACTIVE,
+                accuracy_decimals=1,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional("uSv_hr"): sensor.sensor_schema(
+                icon=ICON_RADIOACTIVE,
+                accuracy_decimals=1,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional("volts"): sensor.sensor_schema(
+                icon=ICON_RADIOACTIVE,
+                accuracy_decimals=1,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
