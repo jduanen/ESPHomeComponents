@@ -18,9 +18,7 @@ class GeigerKitSensor: public Component, public uart::UARTDevice {
     float get_setup_priority() const { return setup_priority::DATA; };
 
   protected:
-    uint32_t last_read_ = 0;
-    void check_buffer_();
-
+//    uint32_t last_read_ = 0;
     std::vector<uint8_t> buffer_;
 };
 
