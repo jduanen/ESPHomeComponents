@@ -16,7 +16,7 @@ void GeigerKitComponent::setup() {
 
 void GeigerKitComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "GeigerKit:");
-//  this->check_uart_settings(9600);
+  this->check_uart_settings(9600);
 }
 
 void GeigerKitComponent::loop() {

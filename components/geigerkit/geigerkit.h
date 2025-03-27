@@ -11,7 +11,6 @@ namespace geigerkit_ns {
 class GeigerKitComponent: public Component, public uart::UARTDevice {
   public:
     GeigerKitComponent() = default;
-//    GeigerKitComponent();
 
     void setup() override;
     void dump_config() override;
