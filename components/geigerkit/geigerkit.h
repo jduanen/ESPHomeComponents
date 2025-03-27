@@ -20,6 +20,10 @@ class GeigerKitSensor: public Component, public uart::UARTDevice {
   protected:
 //    uint32_t last_read_ = 0;
     std::vector<uint8_t> buffer_;
+
+  sensor::Sensor *counts_per_min_sensor_ = new sensor::Sensor();
+  sensor::Sensor *uSv_per_hr_sensor_ = new sensor::Sensor();
+  sensor::Sensor *volts_sensor_ = new sensor::Sensor();
 };
 
 }  // namespace geigerkit_ns
