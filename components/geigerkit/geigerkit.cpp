@@ -1,4 +1,4 @@
-#include "GeigerKit.h"
+#include "geigerkit.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 
