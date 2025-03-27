@@ -8,7 +8,6 @@ namespace geigerkit_ns {
 static const char *TAG = "GeigerKit";
 
 void GeigerKitSensor::setup() {
-  ESP_LOGD(TAG, "Setting up GeigerKit");
   // Rx-only, no setup needed
   this->flush();
   ////if (false) mark_failed();
@@ -31,11 +30,12 @@ void GeigerKitSensor::loop() {
       char tmpBuf[32];
       ESP_LOGD(TAG, "Str: %s", this->buffer_.data());
       memcpy(tmpBuf, this->buffer_.data(), this->buffer_.size());
+      ESP_LOGD(TAG, "Buf: %s", tmpBuf);
       int n = sscanf(tmpBuf, "%d,%f,%f", &countsPerMin, &uSvPerHr, &volts);
       if (n != 3) {
           ESP_LOGE("custom", "Failed to read from GK sensor board: %s", this->buffer_.data());
       }
-      ESP_LOGD(TAG, "cpm: %d, Sv/Hr: %f, volts: %f");
+      ESP_LOGD(TAG, "cpm: %d, Sv/Hr: %f, volts: %f", countsPerMin, uSvPerHr, volts);
       /*
       this->sensor->publish_state(countsPerMin);
       this->sensor->publish_state(uSvPerHr);
