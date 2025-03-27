@@ -3,12 +3,13 @@
 #include "esphome.h"
 #include "esphome/core/component.h"
 //#include "esphome/components/sensor/sensor.h"
-#include "esphome/components/uart/uart.h"
+//#include "esphome/components/uart/uart.h"
 
 namespace esphome {
 namespace geigerkit_ns {
 
-class GeigerKitComponent: public Component, public uart::UARTDevice {
+//class GeigerKitComponent: public Component, public uart::UARTDevice {
+class GeigerKitComponent: public Component {
   public:
 ////    GeigerKitComponent() = default;
     GeigerKitComponent();
