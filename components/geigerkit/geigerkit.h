@@ -2,15 +2,15 @@
 
 #include "esphome.h"
 #include "esphome/core/component.h"
-//#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
 
 namespace esphome {
 namespace geigerkit_ns {
 
-class GeigerKitComponent: public Component, public uart::UARTDevice {
+class GeigerKitSensor: public Component, public uart::UARTDevice {
   public:
-    GeigerKitComponent() = default;
+    GeigerKitSensor() = default;
 
     void setup() override;
     void dump_config() override;
@@ -18,6 +18,7 @@ class GeigerKitComponent: public Component, public uart::UARTDevice {
     float get_setup_priority() const { return setup_priority::DATA; };
 
   protected:
+    uint32_t last_read_ = 0;
     void check_buffer_();
 
     std::vector<uint8_t> buffer_;
