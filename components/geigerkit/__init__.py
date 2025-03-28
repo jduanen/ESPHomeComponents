@@ -69,7 +69,7 @@ async def to_code(config):
         cg.add(var.set_cpm_sensor(sens))
     if usv_config := config.get(SIEVERTS_CONF):
         sens = await sensor.new_sensor(usv_config)
-        cg.add(var.set_seiverts_sensor(sens))
+        cg.add(var.set_sieverts_sensor(sens))
     if v_config := config.get(VOLTS_CONF):
         sens = await sensor.new_sensor(v_config)
         cg.add(var.set_volts_sensor(sens))
