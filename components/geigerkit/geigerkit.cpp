@@ -15,6 +15,9 @@ void GeigerKitSensor::setup() {
 
 void GeigerKitSensor::dump_config() {
   ESP_LOGCONFIG(TAG, "GeigerKit:");
+  LOG_SENSOR("  ", "Counts/Min", this->counts_per_min_sensor_);
+  LOG_SENSOR("  ", "uSieverts/Hr", this->uSv_per_hr_sensor_);
+  LOG_SENSOR("  ", "volts", this->volts_sensor_);
   this->check_uart_settings(9600);
 }
 
@@ -34,9 +37,14 @@ void GeigerKitSensor::loop() {
       if (n != 3) {
           ESP_LOGE("custom", "Failed to read from GK sensor board: %s", this->buffer_.data());
       }
-      this->counts_per_min_sensor_->publish_state(countsPerMin);
-      this->uSv_per_hr_sensor_->publish_state(uSvPerHr);
-      this->volts_sensor_->publish_state(volts);
+
+      if (this->counts_per_min_sensor_ != nullptr)
+        this->counts_per_min_sensor_->publish_state(countsPerMin);
+      if (this->uSv_per_hr_sensor_ != nullptr)
+        this->uSv_per_hr_sensor_->publish_state(uSvPerHr);
+      if (this->volts_sensor_ != nullptr)
+        this->volts_sensor_->publish_state(volts);
+
       this->buffer_.clear();
       continue;
     }
