@@ -16,6 +16,10 @@ CPM_CONF = "cpm"
 SIEVERTS_CONF = "uSv_hr"
 VOLTS_CONF = "volts"
 
+UNIT_CPM = "counts/min"
+UNIT_USV = "uSieverts/hr"
+UNIT_VOLT = "volts"
+
 ns = cg.esphome_ns.namespace("geigerkit_ns")
 GeigerKitSensor = ns.class_(
     "GeigerKitSensor",
@@ -30,16 +34,19 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CPM_CONF): sensor.sensor_schema(
                 icon=ICON_RADIOACTIVE,
                 accuracy_decimals=1,
+                unit_of_measurement=UNIT_CPM,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
             cv.Optional(SIEVERTS_CONF): sensor.sensor_schema(
                 icon=ICON_RADIOACTIVE,
                 accuracy_decimals=1,
+                unit_of_measurement=UNIT_USV,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
             cv.Optional(VOLTS_CONF): sensor.sensor_schema(
                 icon=ICON_RADIOACTIVE,
                 accuracy_decimals=1,
+                unit_of_measurement=UNIT_VOLT,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
         }
