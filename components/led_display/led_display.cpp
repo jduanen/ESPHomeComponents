@@ -1,9 +1,9 @@
 #include "esphome.h"
-#include "ledDisplay.h"
+#include "led_display.h"
 
 
 namespace esphome {
-namespace ledDisplay {
+namespace led_display {
 
 static const char *const TAG = "LedDisplay";
 
@@ -33,7 +33,7 @@ void LedDisplayComponent::loop() {
   ESP_LOGV(TAG, "Loop");
 }
 
-}  // namespace ledDisplay
+}  // namespace led_display
 }  // namespace esphome
 
 /*

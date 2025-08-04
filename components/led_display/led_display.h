@@ -5,7 +5,7 @@
 #include "esphome/components/display/display_buffer.h"
 
 namespace esphome {
-namespace ledDisplay {
+namespace led_display {
 
 static const uint8_t LED_DISP_HEIGHT = 7;
 static const uint8_t LED_DISP_WIDTH = 85;
@@ -35,5 +35,5 @@ protected:
 };
 
 
-}  // namespace ledDisplay
+}  // namespace led_display
 }  // namespace esphome

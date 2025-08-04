@@ -10,7 +10,7 @@ CODEOWNERS = ["@jduanen"]
 AUTO_LOAD = ["display"]
 DEPENDENCIES = ["display"]
 
-led_display_ns = cg.esphome_ns.namespace('ledDisplay')
+led_display_ns = cg.esphome_ns.namespace('led_display')
 LedDisplayComponent = led_display_ns.class_(
     "LedDisplayComponent", display.DisplayBuffer
 )
