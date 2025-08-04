@@ -10,27 +10,26 @@ static const char *const TAG = "LedDisplay";
 
 void LedDisplayComponent::setup() {
   ESP_LOGV(TAG, "SETUP");
-  this->display();
 }
 
 void LedDisplayComponent::dump_config() {
   ESP_LOGCONFIG(TAG,
                 "LED_DISPLAY:\n"
-                "  Brightness: %u\n"
+                "  Brightness: %u\n",
                 this->brightness_);
 //  LOG_PIN("  CS Pin: ", this->cs_);
 }
 
 void draw_absolute_pixel_internal(int x, int y, Color color) {
-  LOG_ESPV(TAG, "Draw Abs: x=%d, y=%d, c=0x%x", x, y, color);
+  ESP_LOGV(TAG, "Draw Abs: x=%d, y=%d, c=0x%x", x, y, color);
 }
 
 void LedDisplayComponent::update() {
-  LOG_ESPV(TAG, "Update");
+  ESP_LOGV(TAG, "Update");
 }
 
 void LedDisplayComponent::loop() {
-  LOG_ESPV(TAG, "Loop");
+  ESP_LOGV(TAG, "Loop");
 }
 
 }  // namespace leddisplay
