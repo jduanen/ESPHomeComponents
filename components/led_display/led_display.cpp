@@ -30,7 +30,7 @@ void LedDisplayComponent::update() {
 }
 
 void LedDisplayComponent::loop() {
-  ESP_LOGV(TAG, "Loop");
+  //ESP_LOGV(TAG, "Loop");
 }
 
 }  // namespace led_display
