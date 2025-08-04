@@ -21,7 +21,7 @@ void LedDisplayComponent::dump_config() {
 //  LOG_PIN("  CS Pin: ", this->cs_);
 }
 
-void draw_absolute_pixel_internal(int x, int y, Color color) {
+void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color) {
   ESP_LOGV(TAG, "Draw Abs: x=%d, y=%d, c=0x%x", x, y, color);
 }
 
