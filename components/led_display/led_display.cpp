@@ -192,20 +192,20 @@ void LedDisplayComponent::scrollLeft_() {
 };
 
 void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell) {
-  this->setScroll(onOff);
-  this->setScrollMode(mode);
-  this->setScrollSpeed(speed);
-  this->setScrollDwell(dwell);
-  this->setScrollDelay(delay);
+  this->set_scroll(onOff);
+  this->set_scroll_mode(mode);
+  this->set_scroll_speed(speed);
+  this->set_scroll_dwell(dwell);
+  this->set_scroll_delay(delay);
 };
 
 void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode) {
-  this->setScroll(onOff);
-  this->setScrollMode(mode);
+  this->set_scroll(onOff);
+  this->set_scroll_mode(mode);
 };
 
 void LedDisplayComponent::scroll_(bool onOff) {
-  this->setScroll(onOff);
+  this->set_scroll(onOff);
 };
 
 void LedDisplayComponent::blankDisplay_() {

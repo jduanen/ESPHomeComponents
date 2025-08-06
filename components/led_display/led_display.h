@@ -69,6 +69,12 @@ public:
 
 	void loop() override;
 
+  void set_scroll_mode(ScrollMode mode) { this->scrollMode_ = mode; };
+  void set_scroll(bool onOff) { this->scrollingOn_ = onOff; };
+  void set_scroll_speed(uint16_t speed) { this->scrollSpeed_ = speed; };
+  void set_scroll_dwell(uint16_t dwell) { this->scrollDwell_ = dwell; };
+  void set_sroll_delay(uint16_t delay) { this->scrollDelay_ = delay; };
+
 protected:
   FrameBuffer_t frameBuffer_;
 
@@ -78,10 +84,12 @@ protected:
 
   bool displayOn_;
 
+  uint8_t intensity_;  //// Intensity of the display from 0 to ? (brightest)
+
   bool scrollingOn_;
   uint32_t lastScroll_;
   uint16_t stepsLeft_;
-  uint16_t scrollSwell_;
+  uint16_t scrollDwell_;
   uint16_t scrollDelay_;
   uint16_t scrollSpeed_;
   ScrollMode scrollMode_;
@@ -89,7 +97,6 @@ protected:
   optional<LedDisplayWriter_t> writerLocal_{};
 
   /*//// FIXME vvvvvvvvvvvvvvvvvv
-  uint8_t intensity_;  //// Intensity of the display from 0 to ? (brightest)
   bool reverse_;
   bool flip_x_;
   bool invert_ = false;
@@ -101,18 +108,12 @@ protected:
   void turnOnOff_(bool onOff);
 
   void scrollLeft_();
-  void setScrollSpeed_(uint16_t speed) { this->scrollSpeed_ = speed; };
-  void setScrollDwell_(uint16_t dwell) { this->scrollDwell_ = dwell; };
-  void setSrollDelay_(uint16_t delay) { this->scrollDelay_ = delay; };
-  void setScroll_(bool onOff) { this->scrollingOn_ = onOff; };
-  void setScrollMode_(ScrollMode mode) { this->scrollMode_ = mode; };
   void scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell);
   void scroll_(bool onOff, ScrollMode mode);
   void scroll_(bool onOff);
 
 	LedColor_t colorToLedColor(Color color);
 
-	void scrollLeft_();
   void display_();
 
 	void enableRow_(int ledColor, int rowNum);
