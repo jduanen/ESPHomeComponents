@@ -34,7 +34,7 @@ void LedDisplayComponent::setup() {
   this->update_ = false;
   this->oldBufferWidth_ = 0;
 
-  this->scroll_ = false;
+  this->scrollingOn_ = false;
   this->lastScroll_ = 0;
   this->stepsLeft_ = 0;
 
@@ -146,7 +146,7 @@ void LedDisplayComponent::loop() {
   }
 
   // check if scroll isn't needed (turned off, or framebuffer is smaller than the display width)
-  if (!this->scroll_ || (bufferWidth <= this->get_width_internal())) {
+  if (!this->scrollingOn_ || (bufferWidth <= this->get_width_internal())) {
     ESP_LOGVV(TAG, "No need to scroll or scroll is off");
     this->display();
     return;
@@ -227,10 +227,10 @@ void LedDisplayComponent::enableRow_(int rowColor, int rowNum) {
     //// assert(rowColor < NUM_COLS);
     switch (rowColor) {
     case (GREEN_COLOR):
-        digitalWrite(GREENS_ENB, LOW);
+        digitalWrite(GREEN_LEDS_ENB, LOW);
         break;
     case (RED_COLOR):
-        digitalWrite(REDS_ENB, LOW);
+        digitalWrite(RED_LEDS_ENB, LOW);
         break;
     default:
         Serial.println("ERROR: invalid row color (" + String(rowColor) + ")");
@@ -239,8 +239,8 @@ void LedDisplayComponent::enableRow_(int rowColor, int rowNum) {
 };
 
 void LedDisplayComponent::disableRows_() {
-    digitalWrite(GREENS_ENB, HIGH);
-    digitalWrite(REDS_ENB, HIGH);
+    digitalWrite(GREEN_LEDS_ENB, HIGH);
+    digitalWrite(RED_LEDS_ENB, HIGH);
     digitalWrite(ROW_BIT_0, LOW);
     digitalWrite(ROW_BIT_1, LOW);
     digitalWrite(ROW_BIT_2, LOW);
@@ -250,7 +250,7 @@ void LedDisplayComponent::shiftInPixels_() {
   // clock in all of the columns' data for the currently enabled row and color
   for (uint32_t col = 0; (col < LED_DISP_WIDTH); col++) {
       digitalWrite(COL_CLOCK, LOW);
-      digitalWrite(COL_DATA, ????); //// (frameBuffers_[bufNum][row][col] & color));
+//      digitalWrite(COL_DATA, ????); //// (frameBuffers_[bufNum][row][col] & color));
       digitalWrite(COL_CLOCK, HIGH);
   }
 

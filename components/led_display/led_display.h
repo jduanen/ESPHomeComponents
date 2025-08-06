@@ -78,7 +78,7 @@ protected:
 
   bool displayOn_;
 
-  bool scroll_;
+  bool scrollingOn_;
   uint32_t lastScroll_;
   uint16_t stepsLeft_;
   uint16_t scrollSwell_;
@@ -104,7 +104,7 @@ protected:
   void setScrollSpeed_(uint16_t speed) { this->scrollSpeed_ = speed; };
   void setScrollDwell_(uint16_t dwell) { this->scrollDwell_ = dwell; };
   void setSrollDelay_(uint16_t delay) { this->scrollDelay_ = delay; };
-  void setScroll_(bool onOff) { this->scroll_ = onOff; };
+  void setScroll_(bool onOff) { this->scrollingOn_ = onOff; };
   void setScrollMode_(ScrollMode mode) { this->scrollMode_ = mode; };
   void scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell);
   void scroll_(bool onOff, ScrollMode mode);
