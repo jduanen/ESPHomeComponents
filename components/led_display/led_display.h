@@ -73,7 +73,7 @@ public:
   void set_scroll(bool onOff) { this->scrollingOn_ = onOff; };
   void set_scroll_speed(uint16_t speed) { this->scrollSpeed_ = speed; };
   void set_scroll_dwell(uint16_t dwell) { this->scrollDwell_ = dwell; };
-  void set_sroll_delay(uint16_t delay) { this->scrollDelay_ = delay; };
+  void set_scroll_delay(uint16_t delay) { this->scrollDelay_ = delay; };
 
 protected:
   FrameBuffer_t frameBuffer_;
@@ -116,9 +116,11 @@ protected:
 
   void display_();
 
+  void blankDisplay_();
+
 	void enableRow_(int ledColor, int rowNum);
 	void disableRows_();
-  void shiftInPixels_(int row, int ledColor);
+  void shiftInPixels_();
 };
 
 }  // namespace led_display

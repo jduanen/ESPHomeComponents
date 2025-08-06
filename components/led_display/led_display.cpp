@@ -1,5 +1,6 @@
 #include "esphome.h"
 #include "esphome/core/application.h"
+#include "esphome/core/hal.h"
 
 #include "led_display.h"
 
@@ -56,9 +57,9 @@ void LedDisplayComponent::dump_config() {
                 "  Scroll Dwell: %u\n"
                 "  Scroll Delay: %u",
                 LED_DISP_HEIGHT, LED_DISP_WIDTH,
-                this->intensity_, this->scroll_mode_,
-                this->scroll_speed_, this->scroll_dwell_,
-                this->scroll_delay_);
+                this->intensity_, this->scrollMode_,
+                this->scrollSpeed_, this->scrollDwell_,
+                this->scrollDelay_);
   //// TODO fill in more info -- e.g., LOG_PIN()????
   LOG_UPDATE_INTERVAL(this);
 };
@@ -99,7 +100,7 @@ LedColor_t LedDisplayComponent::colorToLedColor(Color color) {
 void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color) {
   // write pixel into framebuffer
   // N.B. Color is an RGB565 value stored in a 32b struct defined in esphome/core/color.h
-  ledColor = this->colorToLedColor(color);
+  LedColor_t ledColor = this->colorToLedColor(color);
 
   if ((x + 1) > (int)this->frameBuffer_[0].size()) {
     // expand width (# of cols) of each of the framebuffer's rows
@@ -141,27 +142,27 @@ void LedDisplayComponent::loop() {
   if ((bufferWidth >= (this->oldBufferWidth_ + 3)) || (bufferWidth <= (this->oldBufferWidth_ - 3))) {
     ESP_LOGV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
     this->stepsLeft_ = 0;
-    this->display();
+    this->display_();
     this->oldBufferWidth_ = bufferWidth;
   }
 
   // check if scroll isn't needed (turned off, or framebuffer is smaller than the display width)
   if (!this->scrollingOn_ || (bufferWidth <= this->get_width_internal())) {
     ESP_LOGVV(TAG, "No need to scroll or scroll is off");
-    this->display();
+    this->display_();
     return;
   }
 
   // check if scrolling is to be started and enough delay time has elapsed
   if ((this->stepsLeft_ == 0) && (millisSinceLastScroll < this->scrollDelay_)) {
     ESP_LOGVV(TAG, "At first step. Waiting for scroll delay");
-    this->display();
+    this->display_();
     return;
   }
 
   // ????
   if (this->scrollMode_ == ScrollMode::STOP) {
-    if ((this->stepsleft_ + this->get_width_internal()) == (bufferWidth + 1)) {
+    if ((this->stepsLeft_ + this->get_width_internal()) == (bufferWidth + 1)) {
       if (millisSinceLastScroll < this->scrollDwell_) {
         ESP_LOGVV(TAG, "Dwell time at end of string in case of stop at end. Step %d, since last scroll %d, dwell %d.",
                   this->stepsLeft_, millisSinceLastScroll, this->scrollDwell_);
@@ -182,8 +183,8 @@ void LedDisplayComponent::loop() {
 
 void LedDisplayComponent::turnOnOff_(bool onOff) {
   //// TODO blank the screen and set flag
-  self->blankDisplay_();
-  self->displayOn_ = false;
+  this->blankDisplay_();
+  this->displayOn_ = false;
 };
 
 void LedDisplayComponent::scrollLeft_() {
@@ -226,10 +227,10 @@ void LedDisplayComponent::enableRow_(int rowColor, int rowNum) {
 
     //// assert(rowColor < NUM_COLS);
     switch (rowColor) {
-    case (GREEN_COLOR):
+    case (GREEN_LED_COLOR):
         digitalWrite(GREEN_LEDS_ENB, LOW);
         break;
-    case (RED_COLOR):
+    case (RED_LED_COLOR):
         digitalWrite(RED_LEDS_ENB, LOW);
         break;
     default:
