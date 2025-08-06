@@ -78,6 +78,8 @@ public:
 protected:
   FrameBuffer_t frameBuffer_;
 
+  LedColor_t background_ = BLACK_LED_COLOR;
+
   bool update_ = false;
 
   uint16_t oldBufferWidth_;
@@ -116,11 +118,9 @@ protected:
 
   void display_();
 
-  void blankDisplay_();
-
-	void enableRow_(int ledColor, int rowNum);
+	void enableRow_(LedColor_t rowColor, uint rowNum);
 	void disableRows_();
-  void shiftInPixels_();
+  void shiftInPixels_(LedColor_t rowColor, uint rowNum);
 };
 
 }  // namespace led_display

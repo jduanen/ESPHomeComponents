@@ -24,6 +24,8 @@ void LedDisplayComponent::setup() {
   pinMode(COL_CLOCK, OUTPUT);
   digitalWrite(COL_CLOCK, LOW);
 
+  this->disableRows_();
+
   // init the framebuffer to the size of the display and all black pixels
   this->frameBuffer_ = FrameBuffer_t(this->get_height_internal(),
                                     FrameBufferColumns_t(this->get_width_internal(),
@@ -45,14 +47,15 @@ void LedDisplayComponent::setup() {
 void LedDisplayComponent::dump_config() {
   ESP_LOGCONFIG(TAG,
                 "LED_DISPLAY:\n"
-                "  Height: %u",
-                "  Width: %u",
+                "  Height: %u\n"
+                "  Width: %u\n"
                 "  Intensity: %u\n"
                 "  Scroll Mode: %u\n"
                 "  Scroll Speed: %u\n"
                 "  Scroll Dwell: %u\n"
                 "  Scroll Delay: %u",
-                LED_DISP_HEIGHT, LED_DISP_WIDTH,
+                this->get_height_internal(),
+                this->get_width_internal(),
                 this->intensity_, this->scrollMode_,
                 this->scrollSpeed_, this->scrollDwell_,
                 this->scrollDelay_);
@@ -76,7 +79,7 @@ LedColor_t LedDisplayComponent::colorToLedColor(Color color) {
                        (color.blue * color.blue);
 
   uint32_t minDist = distBlack;
-  uint8_t ledColor = BLACK_LED_COLOR;
+  uint8_t ledColor = this->background_;
 
   if (distRed < minDist) {
     minDist = distRed;
@@ -101,7 +104,7 @@ void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color
   if ((x + 1) > (int)this->frameBuffer_[0].size()) {
     // expand width (# of cols) of each of the framebuffer's rows
     for (int row = 0; (row < this->get_height_internal()); row++) {
-      this->frameBuffer_[row].resize((x + 1), BLACK_LED_COLOR);
+      this->frameBuffer_[row].resize((x + 1), this->background_);
     }
   }
 
@@ -118,15 +121,14 @@ void LedDisplayComponent::update() {
 
   // reset the width of the framebuffer's rows and clear them
   for (int row = 0; (row < this->get_height_internal()); row++) {
-    this->frameBuffer_[row].resize(this->get_width_internal(), LedColor_t{});
+    this->frameBuffer_[row].resize(this->get_width_internal(), this->background_);
   }
 
-  // insert lambda function (if one is given)
   if (this->writerLocal_.has_value()) {
     (*this->writerLocal_)(*this);
-    ESP_LOGD(TAG, "Inserted Lambda function(s)");
+    ESP_LOGD(TAG, "Executed Lambda drawing function");
   }
-  ESP_LOGV(TAG, "Update indicated and framebuffer cleared");
+  ESP_LOGV(TAG, "Update indicated, framebuffer cleared, and given lambda executed");
 };
 
 void LedDisplayComponent::loop() {
@@ -156,9 +158,10 @@ void LedDisplayComponent::loop() {
     return;
   }
 
-  // ????
   if (this->scrollMode_ == ScrollMode::STOP) {
+    // scroll in stop mode, check if this is at the end of the line
     if ((this->stepsLeft_ + this->get_width_internal()) == (bufferWidth + 1)) {
+      // end of the line, see if we're done with dwell time
       if (millisSinceLastScroll < this->scrollDwell_) {
         ESP_LOGVV(TAG, "Dwell time at end of string in case of stop at end. Step %d, since last scroll %d, dwell %d.",
                   this->stepsLeft_, millisSinceLastScroll, this->scrollDwell_);
@@ -168,7 +171,7 @@ void LedDisplayComponent::loop() {
     }
   }
 
-  // ????
+  // if got here, then still scrolling, check if ready to take the next step
   if (millisSinceLastScroll >= this->scrollSpeed_) {
     ESP_LOGVV(TAG, "Call to scroll left action");
     this->lastScroll_ = now;
@@ -178,14 +181,33 @@ void LedDisplayComponent::loop() {
 };
 
 void LedDisplayComponent::turnOnOff_(bool onOff) {
-  //// TODO blank the screen and set flag
-  this->blankDisplay_();
   this->displayOn_ = false;
 };
 
 void LedDisplayComponent::scrollLeft_() {
-  //// FIXME
-  ESP_LOGV(TAG, "TBD");
+  // define a lambda to rotate a line left by the given number of steps
+  auto scroll = [&](std::vector<uint8_t> &line, uint16_t steps) {
+    std::rotate(line.begin(), std::next(line.begin(), steps), line.end());
+  };
+
+  // scroll by circular rotating all rows left
+  for (int row = 0; row < this->get_height_internal(); row++) {
+    if (this->update_) {
+      // update required, so append a black pixel to the end of the row to ensure the row's long enough
+      this->frameBuffer_[row].push_back(this->background_);
+      // circular rotate the row by one more than the number of steps left
+      // because an update ????
+      scroll(this->frameBuffer_[row],
+             (this->stepsLeft_ + 1) % (this->frameBuffer_[row].size()));
+    } else {
+      // no update required, so just rotate the current row by one
+      scroll(this->frameBuffer_[row], 1);
+    }
+  }
+  this->update_ = false;
+  this->stepsLeft_++;
+  this->stepsLeft_ %= this->frameBuffer_[0].size();
+  ESP_LOGV(TAG, "Scrolled left");
 };
 
 void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell) {
@@ -205,34 +227,39 @@ void LedDisplayComponent::scroll_(bool onOff) {
   this->set_scroll(onOff);
 };
 
-void LedDisplayComponent::blankDisplay_() {
-  //// FIXME
-  ESP_LOGV(TAG, "TBD");
-};
-
 void LedDisplayComponent::display_() {
-  //// FIXME
-  ESP_LOGV(TAG, "TBD");
+  if (!this->displayOn_) return;
+  // for each row, 
+  //  for both colors,
+  //    shift in row data and latch it
+  //    enable the row&color
+  for (uint row = 0; row < this->get_height_internal(); row++) {
+    for (LedColor_t &color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
+      this->shiftInPixels_(color, row);
+      this->enableRow_(color, row);
+      //// TODO consider a delay here
+    }
+    //// TODO think about where this belongs
+    this->disableRows_();
+  }
 };
 
-void LedDisplayComponent::enableRow_(int rowColor, int rowNum) {
-    //// assert(rowNum < NUM_ROWS);
-    digitalWrite(ROW_BIT_0, (rowNum & 0x01));
-    digitalWrite(ROW_BIT_1, (rowNum & 0x02));
-    digitalWrite(ROW_BIT_2, (rowNum & 0x04));
+void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
+  assert(rowNum < NUM_ROWS);
+  digitalWrite(ROW_BIT_0, (rowNum & 0x01));
+  digitalWrite(ROW_BIT_1, (rowNum & 0x02));
+  digitalWrite(ROW_BIT_2, (rowNum & 0x04));
 
-    //// assert(rowColor < NUM_COLS);
-    switch (rowColor) {
-    case (GREEN_LED_COLOR):
-        digitalWrite(GREEN_LEDS_ENB, LOW);
-        break;
-    case (RED_LED_COLOR):
-        digitalWrite(RED_LEDS_ENB, LOW);
-        break;
-    default:
-        Serial.println("ERROR: invalid row color (" + String(rowColor) + ")");
-        break;
-    }
+  switch (rowColor) {
+  case (GREEN_LED_COLOR):
+    digitalWrite(GREEN_LEDS_ENB, LOW);
+    break;
+  case (RED_LED_COLOR):
+    digitalWrite(RED_LEDS_ENB, LOW);
+    break;
+  default:
+    ESP_LOGE("Invalid row color: %u", (uint)(rowColor));
+  }
 };
 
 void LedDisplayComponent::disableRows_() {
@@ -243,11 +270,11 @@ void LedDisplayComponent::disableRows_() {
     digitalWrite(ROW_BIT_2, LOW);
 };
 
-void LedDisplayComponent::shiftInPixels_() {
-  // clock in all of the columns' data for the currently enabled row and color
-  for (uint32_t col = 0; (col < LED_DISP_WIDTH); col++) {
+void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
+  // clock in and latch all of the given row's pixel data
+  for (uint col = 0; (col < this->get_width_internal()); col++) {
       digitalWrite(COL_CLOCK, LOW);
-//      digitalWrite(COL_DATA, ????); //// (frameBuffers_[bufNum][row][col] & color));
+      digitalWrite(COL_DATA, (this->frameBuffer_[rowNum][col] & color));
       digitalWrite(COL_CLOCK, HIGH);
   }
 
