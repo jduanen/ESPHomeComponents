@@ -2,7 +2,7 @@
 
 #include "esphome.h"
 #include "esphome/core/component.h"
-#include "esphome/core/log.h"
+#include "esphome/core/time.h"
 #include "esphome/components/display/display_buffer.h"
 
 #include <vector>

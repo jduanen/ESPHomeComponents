@@ -1,9 +1,5 @@
-#include "esphome.h"
-#include "esphome/core/application.h"
-#include "esphome/core/hal.h"
-
 #include "led_display.h"
-
+#include "esphome/core/application.h"
 
 namespace esphome {
 namespace led_display {
