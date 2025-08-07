@@ -258,7 +258,7 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
     digitalWrite(RED_LEDS_ENB, LOW);
     break;
   default:
-    ESP_LOGE("Invalid row color");
+    ESP_LOGE(TAG, "Invalid row color: %u", rowColor);
   }
 };
 
