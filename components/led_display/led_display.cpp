@@ -234,7 +234,7 @@ void LedDisplayComponent::display_() {
   //    shift in row data and latch it
   //    enable the row&color
   for (uint row = 0; row < this->get_height_internal(); row++) {
-    for (LedColor_t &color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
+    for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
       this->shiftInPixels_(color, row);
       this->enableRow_(color, row);
       //// TODO consider a delay here
@@ -245,7 +245,7 @@ void LedDisplayComponent::display_() {
 };
 
 void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
-  assert(rowNum < NUM_ROWS);
+  assert(rowNum < this->get_height_internal());
   digitalWrite(ROW_BIT_0, (rowNum & 0x01));
   digitalWrite(ROW_BIT_1, (rowNum & 0x02));
   digitalWrite(ROW_BIT_2, (rowNum & 0x04));
@@ -258,7 +258,7 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
     digitalWrite(RED_LEDS_ENB, LOW);
     break;
   default:
-    ESP_LOGE("Invalid row color: %u", (uint)(rowColor));
+    ESP_LOGE("Invalid row color: %u", rowColor);
   }
 };
 
