@@ -7,11 +7,12 @@
 
 #include <vector>
 
+/*
 #### TODO
 ####  * add intensity() method -- delay in display_()????
 ####  * add printdigitf(), printdigit(), strftimedigit() methods????
 ####  * 
-
+*/
 
 namespace esphome {
 namespace led_display {
