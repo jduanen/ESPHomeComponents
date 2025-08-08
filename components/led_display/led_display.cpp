@@ -126,7 +126,7 @@ void LedDisplayComponent::update() {
 
   if (this->writerLocal_.has_value()) {
     (*this->writerLocal_)(*this);
-    ESP_LOGD(TAG, "Executed Lambda drawing function");
+    ESP_LOGV(TAG, "Executed Lambda drawing function");
   }
   ESP_LOGV(TAG, "Update indicated, framebuffer cleared, and given lambda executed");
 };
@@ -229,10 +229,7 @@ void LedDisplayComponent::scroll_(bool onOff) {
 
 void LedDisplayComponent::display_() {
   if (!this->displayOn_) return;
-  // for each row, 
-  //  for both colors,
-  //    shift in row data and latch it
-  //    enable the row&color
+  // for each row and for both colors, shift in row data and latch it, then enable the row&color
   for (uint row = 0; row < this->get_height_internal(); row++) {
     for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
       this->shiftInPixels_(color, row);
