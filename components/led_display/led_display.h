@@ -75,8 +75,8 @@ public:
 
 	void loop() override;
 
-  void set_scroll_mode(ScrollMode mode) { this->scrollMode_ = mode; };
-  void set_scroll(bool onOff) { this->scrollingOn_ = onOff; };
+  void set_scroll_mode(ScrollMode mode) { this->scrollMode_ = mode; ESP_LOGV(TAG, "ScrollMode: %u", mode); };
+  void set_scroll(bool onOff) { this->scrollingOn_ = onOff; ESP_LOGV(TAG, "Scroll: %b", onOff); };
   void set_scroll_speed(uint16_t speed) { this->scrollSpeed_ = speed; };
   void set_scroll_dwell(uint16_t dwell) { this->scrollDwell_ = dwell; };
   void set_scroll_delay(uint16_t delay) { this->scrollDelay_ = delay; };
