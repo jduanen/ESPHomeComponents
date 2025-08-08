@@ -10,10 +10,10 @@ void LedDisplayComponent::setup() {
   pinMode(ROW_BIT_2, OUTPUT);
 
   pinMode(GREEN_LEDS_ENB, OUTPUT);
-  digitalWrite(GREEN_LEDS_ENB, HIGH);
+  digitalWrite(GREEN_LEDS_ENB, LOW);
 
   pinMode(RED_LEDS_ENB, OUTPUT);
-  digitalWrite(RED_LEDS_ENB, HIGH);
+  digitalWrite(RED_LEDS_ENB, LOW);
 
   pinMode(COL_DATA, OUTPUT);
   digitalWrite(COL_DATA, LOW);
@@ -252,10 +252,10 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
 
   switch (rowColor) {
   case (GREEN_LED_COLOR):
-    digitalWrite(GREEN_LEDS_ENB, LOW);
+    digitalWrite(GREEN_LEDS_ENB, HIGH);
     break;
   case (RED_LED_COLOR):
-    digitalWrite(RED_LEDS_ENB, LOW);
+    digitalWrite(RED_LEDS_ENB, HIGH);
     break;
   default:
     ESP_LOGE(TAG, "Invalid row color: %u", rowColor);
@@ -263,8 +263,8 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
 };
 
 void LedDisplayComponent::disableRows_() {
-    digitalWrite(GREEN_LEDS_ENB, HIGH);
-    digitalWrite(RED_LEDS_ENB, HIGH);
+    digitalWrite(GREEN_LEDS_ENB, LOW);
+    digitalWrite(RED_LEDS_ENB, LOW);
     digitalWrite(ROW_BIT_0, LOW);
     digitalWrite(ROW_BIT_1, LOW);
     digitalWrite(ROW_BIT_2, LOW);
@@ -277,12 +277,12 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
       digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? 1 : 0));
       digitalWrite(COL_CLOCK, HIGH);
   }
-  digitalWrite(COL_CLOCK, LOW);
+  digitalWrite(COL_DATA, LOW);
 
   // strobe to latch data -- desired color of LEDs in the row are now set
   digitalWrite(COL_STROBE, LOW);
   digitalWrite(COL_STROBE, HIGH);
-  digitalWrite(COL_DATA, LOW);
+  digitalWrite(COL_CLOCK, LOW);
 };
 
 }  // namespace led_display
