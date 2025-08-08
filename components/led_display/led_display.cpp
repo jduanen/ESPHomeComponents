@@ -237,7 +237,8 @@ void LedDisplayComponent::display_() {
     for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
       this->shiftInPixels_(color, row);
       this->enableRow_(color, row);
-      //// TODO consider a delay here
+      //// FIXME adjust or remove this
+      delayMicroseconds(500);
     }
     //// TODO think about where this belongs
     this->disableRows_();
