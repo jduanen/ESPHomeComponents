@@ -138,7 +138,7 @@ void LedDisplayComponent::loop() {
   // call display if the buffer has shrunk past the current position since last update????
   const size_t bufferWidth = this->frameBuffer_[0].size();
   if ((bufferWidth >= (this->oldBufferWidth_ + 3)) || (bufferWidth <= (this->oldBufferWidth_ - 3))) {
-    ESP_LOGV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
+    ESP_LOGVV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
     this->stepsLeft_ = 0;
     this->display_();
     this->oldBufferWidth_ = bufferWidth;
@@ -167,7 +167,7 @@ void LedDisplayComponent::loop() {
                   this->stepsLeft_, millisSinceLastScroll, this->scrollDwell_);
         return;
       }
-      ESP_LOGV(TAG, "Dwell time passed. Continue scrolling.");
+      ESP_LOGVV(TAG, "Dwell time passed. Continue scrolling.");
     }
   }
 
@@ -207,7 +207,7 @@ void LedDisplayComponent::scrollLeft_() {
   this->update_ = false;
   this->stepsLeft_++;
   this->stepsLeft_ %= this->frameBuffer_[0].size();
-  ESP_LOGV(TAG, "Scrolled left");
+  ESP_LOGVV(TAG, "Scrolled left");
 };
 
 void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell) {
