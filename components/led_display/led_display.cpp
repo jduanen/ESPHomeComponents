@@ -58,7 +58,7 @@ void LedDisplayComponent::dump_config() {
                 this->get_height_internal(),
                 this->get_width_internal(),
                 this->intensity_,
-                this->scrollingOn, this->scrollMode_,
+                this->scrollingOn_, this->scrollMode_,
                 this->scrollSpeed_, this->scrollDwell_,
                 this->scrollDelay_);
   //// TODO fill in more info -- e.g., LOG_PIN()????
