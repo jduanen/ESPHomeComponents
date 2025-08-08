@@ -39,7 +39,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_SCROLL_MODE, default="CONTINUOUS"): cv.enum(
                 SCROLL_MODES, upper=True
             ),
-            cv.Optional(CONF_SCROLL_ENABLE, default=True): cv.boolean,
+            cv.Optional(CONF_SCROLL_ENABLE, default=False): cv.boolean,  #### FIXME
             cv.Optional(
                 CONF_SCROLL_SPEED, default="250ms"
             ): cv.positive_time_period_milliseconds,
