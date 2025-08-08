@@ -272,16 +272,16 @@ void LedDisplayComponent::disableRows_() {
 
 void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   // clock in and latch all of the given row's pixel data
-  for (uint col = 0; (col < this->get_width_internal()); col++) {
+  for (uint col = (this->get_width_internal() - 1); (col >= 0); col--) {
       digitalWrite(COL_CLOCK, LOW);
       digitalWrite(COL_DATA, (this->frameBuffer_[rowNum][col] & rowColor));
       digitalWrite(COL_CLOCK, HIGH);
   }
+  digitalWrite(COL_CLOCK, LOW);
 
   // strobe to latch data -- desired color of LEDs in the row are now set
   digitalWrite(COL_STROBE, LOW);
   digitalWrite(COL_STROBE, HIGH);
-  digitalWrite(COL_CLOCK, LOW);
   digitalWrite(COL_DATA, LOW);
 };
 
