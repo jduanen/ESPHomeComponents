@@ -50,13 +50,15 @@ void LedDisplayComponent::dump_config() {
                 "  Height: %u\n"
                 "  Width: %u\n"
                 "  Intensity: %u\n"
+                "  Scrolling On: %b\n"
                 "  Scroll Mode: %u\n"
                 "  Scroll Speed: %u\n"
                 "  Scroll Dwell: %u\n"
                 "  Scroll Delay: %u",
                 this->get_height_internal(),
                 this->get_width_internal(),
-                this->intensity_, this->scrollMode_,
+                this->intensity_,
+                this->scrollingOn, this->scrollMode_,
                 this->scrollSpeed_, this->scrollDwell_,
                 this->scrollDelay_);
   //// TODO fill in more info -- e.g., LOG_PIN()????
