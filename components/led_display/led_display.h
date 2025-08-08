@@ -7,6 +7,11 @@
 
 #include <vector>
 
+#### TODO
+####  * add intensity() method -- delay in display_()????
+####  * add printdigitf(), printdigit(), strftimedigit() methods????
+####  * 
+
 
 namespace esphome {
 namespace led_display {
@@ -97,15 +102,6 @@ protected:
   ScrollMode scrollMode_;
 
   optional<LedDisplayWriter_t> writerLocal_{};
-
-  /*//// FIXME vvvvvvvvvvvvvvvvvv
-  bool reverse_;
-  bool flip_x_;
-  bool invert_ = false;
-  uint8_t orientation_;
-  uint8_t bckgrnd_ = 0x0;
-  size_t get_buffer_length_();
-  *//// FIXME ^^^^^^^^^^^^^^^^^
 
   void turnOnOff_(bool onOff);
 
