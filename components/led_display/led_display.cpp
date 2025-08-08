@@ -50,7 +50,7 @@ void LedDisplayComponent::dump_config() {
                 "  Height: %u\n"
                 "  Width: %u\n"
                 "  Intensity: %u\n"
-                "  Scrolling On: %b\n"
+                "  Scrolling On: %u\n"
                 "  Scroll Mode: %u\n"
                 "  Scroll Speed: %u\n"
                 "  Scroll Dwell: %u\n"
