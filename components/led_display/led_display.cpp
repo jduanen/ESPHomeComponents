@@ -10,16 +10,16 @@ void LedDisplayComponent::setup() {
   pinMode(ROW_BIT_2, OUTPUT);
 
   pinMode(GREEN_LEDS_ENB, OUTPUT);
-  digitalWrite(GREEN_LEDS_ENB, LOW);
+  digitalWrite(GREEN_LEDS_ENB, HIGH);
 
   pinMode(RED_LEDS_ENB, OUTPUT);
-  digitalWrite(RED_LEDS_ENB, LOW);
+  digitalWrite(RED_LEDS_ENB, HIG);
 
   pinMode(COL_DATA, OUTPUT);
   digitalWrite(COL_DATA, LOW);
 
   pinMode(COL_STROBE, OUTPUT);
-  digitalWrite(COL_STROBE, HIGH);
+  digitalWrite(COL_STROBE, LOW);
 
   pinMode(COL_CLOCK, OUTPUT);
   digitalWrite(COL_CLOCK, LOW);
@@ -251,10 +251,12 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
 
   switch (rowColor) {
   case (GREEN_LED_COLOR):
-    digitalWrite(GREEN_LEDS_ENB, HIGH);
+    digitalWrite(GREEN_LEDS_ENB, LOW);
+    digitalWrite(RED_LEDS_ENB, HIGH);
     break;
   case (RED_LED_COLOR):
-    digitalWrite(RED_LEDS_ENB, HIGH);
+    digitalWrite(GREEN_LEDS_ENB, HIGH);
+    digitalWrite(RED_LEDS_ENB, LOW);
     break;
   default:
     ESP_LOGE(TAG, "Invalid row color: %u", rowColor);
@@ -262,11 +264,11 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
 };
 
 void LedDisplayComponent::disableRows_() {
-    digitalWrite(GREEN_LEDS_ENB, LOW);
-    digitalWrite(RED_LEDS_ENB, LOW);
-    digitalWrite(ROW_BIT_0, LOW);
+    digitalWrite(GREEN_LEDS_ENB, HIGH);
+    digitalWrite(RED_LEDS_ENB, HIGH);
+    digitalWrite(ROW_BIT_0, HIGH);
     digitalWrite(ROW_BIT_1, HIGH);
-    digitalWrite(ROW_BIT_2, LOW);
+    digitalWrite(ROW_BIT_2, HIGH);
 };
 
 void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
@@ -276,12 +278,10 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
       digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? 1 : 0));
       digitalWrite(COL_CLOCK, HIGH);
   }
-  digitalWrite(COL_DATA, LOW);
 
   // strobe to latch data -- desired color of LEDs in the row are now set
-  digitalWrite(COL_STROBE, LOW);
   digitalWrite(COL_STROBE, HIGH);
-  digitalWrite(COL_CLOCK, LOW);
+  digitalWrite(COL_STROBE, LOW);
 };
 
 }  // namespace led_display
