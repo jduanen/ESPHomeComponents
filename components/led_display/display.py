@@ -75,6 +75,12 @@ async def to_code(config):
         cg.add(var.set_writer(lambda_))
 
 
+DisplayVisibilityAction = led_display_ns.class_(
+    "DisplayVisibilityAction", automation.Action
+)
+DisplayIntensityAction = led_display_ns.class_("DisplayIntensityAction", automation.Action)
+
+
 LED_DISPLAY_OFF_ACTION_SCHEMA = automation.maybe_simple_id(
     {
         cv.GenerateID(): cv.use_id(LedDisplayComponent),
