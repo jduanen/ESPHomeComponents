@@ -13,7 +13,7 @@ void LedDisplayComponent::setup() {
   digitalWrite(GREEN_LEDS_ENB, HIGH);
 
   pinMode(RED_LEDS_ENB, OUTPUT);
-  digitalWrite(RED_LEDS_ENB, HIG);
+  digitalWrite(RED_LEDS_ENB, HIGH);
 
   pinMode(COL_DATA, OUTPUT);
   digitalWrite(COL_DATA, LOW);
