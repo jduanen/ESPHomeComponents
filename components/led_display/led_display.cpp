@@ -36,6 +36,7 @@ void LedDisplayComponent::setup() {
   this->set_scroll(false);
   this->lastScroll_ = 0;
   this->stepsLeft_ = 0;
+  this->lastLoop_ = App.get_loop_component_start_time();
   this->set_intensity(50);  // default value
 
   this->display_();
@@ -137,7 +138,10 @@ void LedDisplayComponent::update() {
 
 void LedDisplayComponent::loop() {
   const uint32_t now = App.get_loop_component_start_time();
-  const uint32_t millisSinceLastScroll = (now - this->lastScroll_);
+  const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
+  ESP_LOGV(TAG, "Refresh rate: %f", (1 / msecSinceLastLoop));
+  this->lastLoop_ = msecSinceLastLoop;
+  const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
 
   // call display if the buffer has shrunk past the current position since last update????
   const size_t bufferWidth = this->frameBuffer_[0].size();
@@ -156,7 +160,7 @@ void LedDisplayComponent::loop() {
   }
 
   // check if scrolling is to be started and enough delay time has elapsed
-  if ((this->stepsLeft_ == 0) && (millisSinceLastScroll < this->scrollDelay_)) {
+  if ((this->stepsLeft_ == 0) && (msecSinceLastScroll < this->scrollDelay_)) {
     ESP_LOGVV(TAG, "At first step. Waiting for scroll delay");
     this->display_();
     return;
@@ -166,9 +170,9 @@ void LedDisplayComponent::loop() {
     // scroll in stop mode, check if this is at the end of the line
     if ((this->stepsLeft_ + this->get_width_internal()) == (bufferWidth + 1)) {
       // end of the line, see if we're done with dwell time
-      if (millisSinceLastScroll < this->scrollDwell_) {
+      if (msecSinceLastScroll < this->scrollDwell_) {
         ESP_LOGVV(TAG, "Dwell time at end of string in case of stop at end. Step %d, since last scroll %d, dwell %d.",
-                  this->stepsLeft_, millisSinceLastScroll, this->scrollDwell_);
+                  this->stepsLeft_, msecSinceLastScroll, this->scrollDwell_);
         return;
       }
       ESP_LOGVV(TAG, "Dwell time passed. Continue scrolling.");
@@ -176,7 +180,7 @@ void LedDisplayComponent::loop() {
   }
 
   // if got here, then still scrolling, check if ready to take the next step
-  if (millisSinceLastScroll >= this->scrollSpeed_) {
+  if (msecSinceLastScroll >= this->scrollSpeed_) {
     ESP_LOGVV(TAG, "Call to scroll left action");
     this->lastScroll_ = now;
     this->scrollLeft_();

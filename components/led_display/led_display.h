@@ -112,6 +112,7 @@ protected:
 
   bool scrollingOn_;
   uint32_t lastScroll_;
+  uint32_t lastLoop_;
   uint16_t stepsLeft_;
   uint16_t scrollDwell_;
   uint16_t scrollDelay_;
