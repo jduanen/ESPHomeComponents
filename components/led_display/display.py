@@ -1,3 +1,4 @@
+from esphome import automation
 import esphome.codegen as cg
 from esphome.components import display
 import esphome.config_validation as cv
