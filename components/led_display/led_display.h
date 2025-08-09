@@ -79,7 +79,7 @@ public:
 
   void set_intensity(uint8_t intensity) {
     this->intensity_ = intensity;
-    this->brightness_ = this->intensityToBrightness_(intensity);
+    this->brightness_ = map(intensity, MAX_LEDS_ON_DELAY, MIN_LEDS_ON_DELAY, 0, 100);
     ESP_LOGV(TAG, "Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   }
   void set_scroll_mode(ScrollMode mode) {
@@ -132,8 +132,6 @@ protected:
   void enableRow_(LedColor_t rowColor, uint rowNum);
   void disableRows_();
   void shiftInPixels_(LedColor_t rowColor, uint rowNum);
-
-  uint intensityToBrightness_(uint8_t intensity);
 };
 
 }  // namespace led_display

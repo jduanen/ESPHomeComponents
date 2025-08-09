@@ -285,9 +285,5 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   digitalWrite(COL_STROBE, LOW);
 };
 
-uint intensityToBrightness_(uint8_t intensity) {
-  return map(intensity, MAX_LEDS_ON_DELAY, MIN_LEDS_ON_DELAY, 0, 100);
-}
-
 }  // namespace led_display
 }  // namespace esphome
