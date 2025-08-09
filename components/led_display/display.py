@@ -3,7 +3,7 @@ from esphome.components import display
 import esphome.config_validation as cv
 from esphome.const import (
     CONF_ID,
-    CONG_INTENSITY,
+    CONF_INTENSITY,
     CONF_LAMBDA,
     CONF_STATE,
 )
