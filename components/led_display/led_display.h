@@ -9,7 +9,6 @@
 
 /*
 #### TODO
-####  * add intensity() method -- delay in display_()????
 ####  * add printdigitf(), printdigit(), strftimedigit() methods????
 ####  * 
 */
@@ -57,13 +56,13 @@ using LedDisplayWriter_t = std::function<void(LedDisplayComponent &)>;
 
 class LedDisplayComponent: public display::DisplayBuffer {
 public:
-	void set_writer(LedDisplayWriter_t &&writer) { this->writerLocal_ = writer; }
+  void set_writer(LedDisplayWriter_t &&writer) { this->writerLocal_ = writer; }
  
-	void setup() override;
+  void setup() override;
 
-	void dump_config() override;
+  void dump_config() override;
 
-	float get_setup_priority() const { return setup_priority::PROCESSOR; };
+  float get_setup_priority() const { return setup_priority::PROCESSOR; };
 
   void draw_absolute_pixel_internal(int x, int y, Color color) override;
   int get_height_internal() { return LED_DISP_HEIGHT; };
@@ -71,15 +70,28 @@ public:
 
   display::DisplayType get_display_type() { return display::DisplayType::DISPLAY_TYPE_COLOR; }
 
-	void update() override;
+  void update() override;
 
-	void loop() override;
+  void loop() override;
 
-  void set_scroll_mode(ScrollMode mode) { this->scrollMode_ = mode; ESP_LOGV(TAG, "ScrollMode: %u", mode); };
-  void set_scroll(bool onOff) { this->scrollingOn_ = onOff; ESP_LOGV(TAG, "Scroll: %u", onOff); };
+  void set_intensity(uint8_t intensity) {
+    this->intensity_ = intensity;
+    this->brightness_ = this->intensityToBrightness_(intensity);
+    ESP_LOGV(TAG, "Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
+  }
+  void set_scroll_mode(ScrollMode mode) {
+    this->scrollMode_ = mode;
+    ESP_LOGV(TAG, "ScrollMode: %u", mode);
+  };
+  void set_scroll(bool onOff) {
+    this->scrollingOn_ = onOff;
+    ESP_LOGV(TAG, "Scroll: %u", onOff);
+  };
   void set_scroll_speed(uint16_t speed) { this->scrollSpeed_ = speed; };
   void set_scroll_dwell(uint16_t dwell) { this->scrollDwell_ = dwell; };
   void set_scroll_delay(uint16_t delay) { this->scrollDelay_ = delay; };
+
+  void turn_on_off(bool onOff);
 
 protected:
   FrameBuffer_t frameBuffer_;
@@ -90,9 +102,10 @@ protected:
 
   uint16_t oldBufferWidth_;
 
-  bool displayOn_;
+  bool displayOn_ = false;
 
-  uint8_t intensity_;  //// Intensity of the display from 0 to ? (brightest)
+  uint8_t intensity_;  //// Intensity of the display from 0 to 100 (brightest)
+  uint brightness_;    //// Intensity mapped into num of uSec linger time
 
   bool scrollingOn_;
   uint32_t lastScroll_;
@@ -104,20 +117,20 @@ protected:
 
   optional<LedDisplayWriter_t> writerLocal_{};
 
-  void turnOnOff_(bool onOff);
-
   void scrollLeft_();
   void scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell);
   void scroll_(bool onOff, ScrollMode mode);
   void scroll_(bool onOff);
 
-	LedColor_t colorToLedColor(Color color);
+  LedColor_t colorToLedColor(Color color);
 
   void display_();
 
-	void enableRow_(LedColor_t rowColor, uint rowNum);
-	void disableRows_();
+  void enableRow_(LedColor_t rowColor, uint rowNum);
+  void disableRows_();
   void shiftInPixels_(LedColor_t rowColor, uint rowNum);
+
+  uint intensityToBrightness_(uint8_t intensity);
 };
 
 }  // namespace led_display
