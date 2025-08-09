@@ -37,7 +37,7 @@ void LedDisplayComponent::setup() {
   this->lastScroll_ = 0;
   this->stepsLeft_ = 0;
   this->lastLoop_ = App.get_loop_component_start_time();
-  this->set_intensity(50);  // default value
+//  this->set_intensity(50);  // default value
 
   this->display_();
 
@@ -139,14 +139,14 @@ void LedDisplayComponent::update() {
 void LedDisplayComponent::loop() {
   const uint32_t now = App.get_loop_component_start_time();
   const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
-  ESP_LOGV(TAG, "Refresh rate: %f", (1 / msecSinceLastLoop));
+  ESP_LOGVV(TAG, "Refresh rate: %f", (1000.0 / msecSinceLastLoop));
   this->lastLoop_ = msecSinceLastLoop;
   const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
 
   // call display if the buffer has shrunk past the current position since last update????
   const size_t bufferWidth = this->frameBuffer_[0].size();
   if ((bufferWidth >= (this->oldBufferWidth_ + 3)) || (bufferWidth <= (this->oldBufferWidth_ - 3))) {
-    ESP_LOGVV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
+    ESP_LOGV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
     this->stepsLeft_ = 0;
     this->display_();
     this->oldBufferWidth_ = bufferWidth;
