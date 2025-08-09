@@ -234,13 +234,12 @@ void LedDisplayComponent::display_() {
   // for each row and for both colors, shift in row data and latch it, then enable the row&color
   for (uint row = 0; row < this->get_height_internal(); row++) {
     for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
+      this->disableRows_();
       this->shiftInPixels_(color, row);
       this->enableRow_(color, row);
       //// FIXME adjust or remove this
       delayMicroseconds(500);
     }
-    //// TODO think about where this belongs
-    this->disableRows_();
   }
 };
 
@@ -266,7 +265,7 @@ void LedDisplayComponent::disableRows_() {
     digitalWrite(GREEN_LEDS_ENB, LOW);
     digitalWrite(RED_LEDS_ENB, LOW);
     digitalWrite(ROW_BIT_0, LOW);
-    digitalWrite(ROW_BIT_1, LOW);
+    digitalWrite(ROW_BIT_1, HIGH);
     digitalWrite(ROW_BIT_2, LOW);
 };
 
