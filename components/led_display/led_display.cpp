@@ -33,13 +33,14 @@ void LedDisplayComponent::setup() {
   this->update_ = false;
   this->oldBufferWidth_ = 0;
 
-  this->scrollingOn_ = false;
+  this->setScroll(false);
   this->lastScroll_ = 0;
   this->stepsLeft_ = 0;
-
-  this->displayOn_ = true;
+  this->set_intensity(50);  // default value
 
   this->display_();
+
+  this->displayOn_ = true;
 
   ESP_LOGV(TAG, "setup complete");
 };
@@ -50,6 +51,7 @@ void LedDisplayComponent::dump_config() {
                 "  Height: %u\n"
                 "  Width: %u\n"
                 "  Intensity: %u\n"
+                "  Brightness: %u\n"
                 "  Scrolling On: %u\n"
                 "  Scroll Mode: %u\n"
                 "  Scroll Speed: %u\n"
@@ -57,7 +59,7 @@ void LedDisplayComponent::dump_config() {
                 "  Scroll Delay: %u",
                 this->get_height_internal(),
                 this->get_width_internal(),
-                this->intensity_,
+                this->intensity_, this->brightness_,
                 this->scrollingOn_, this->scrollMode_,
                 this->scrollSpeed_, this->scrollDwell_,
                 this->scrollDelay_);
@@ -182,8 +184,8 @@ void LedDisplayComponent::loop() {
   }
 };
 
-void LedDisplayComponent::turnOnOff_(bool onOff) {
-  this->displayOn_ = false;
+void LedDisplayComponent::turn_on_off(bool onOff) {
+  this->displayOn_ = onOff;
 };
 
 void LedDisplayComponent::scrollLeft_() {
@@ -236,7 +238,7 @@ void LedDisplayComponent::display_() {
     for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
       this->shiftInPixels_(color, row);
       this->enableRow_(color, row);
-      delayMicroseconds(500);    //// FIXME make this be intensity
+      delayMicroseconds(this->brightness_);
       this->disableRows_();
     }
   }
@@ -282,6 +284,10 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   digitalWrite(COL_STROBE, HIGH);
   digitalWrite(COL_STROBE, LOW);
 };
+
+uint intensityToBrightness_(uint8_t intensity) {
+  return map(intensity, MAX_LEDS_ON_DELAY, MIN_LEDS_ON_DELAY, 0, 100);
+}
 
 }  // namespace led_display
 }  // namespace esphome
