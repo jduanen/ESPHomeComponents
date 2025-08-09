@@ -33,7 +33,7 @@ void LedDisplayComponent::setup() {
   this->update_ = false;
   this->oldBufferWidth_ = 0;
 
-  this->setScroll(false);
+  this->set_scroll(false);
   this->lastScroll_ = 0;
   this->stepsLeft_ = 0;
   this->set_intensity(50);  // default value
