@@ -38,9 +38,9 @@ static const uint8_t ROW_BIT_2  = D2;
 static const uint8_t RED_LEDS_ENB   = D3;
 static const uint8_t GREEN_LEDS_ENB = D4;
 
+static const uint8_t COL_CLOCK  = D5;
 static const uint8_t COL_DATA   = D8;
 static const uint8_t COL_STROBE = D9;
-static const uint8_t COL_CLOCK  = D5;
 
 static const LedColor_t BLACK_LED_COLOR = 0b00000000;
 static const LedColor_t RED_LED_COLOR   = 0b00000001;
