@@ -89,18 +89,6 @@ LED_DISPLAY_ON_ACTION_SCHEMA = automation.maybe_simple_id(
     }
 )
 
-@automation.register_action(
-    "leddisplay.invert_off", DisplayInvertAction, LED_DISPLAY_OFF_ACTION_SCHEMA
-)
-@automation.register_action(
-    "leddisplay.invert_on", DisplayInvertAction, LED_DISPLAY_ON_ACTION_SCHEMA
-)
-async def leddisplay_invert_to_code(config, action_id, template_arg, args):
-    var = cg.new_Pvariable(action_id, template_arg)
-    await cg.register_parented(var, config[CONF_ID])
-    cg.add(var.set_state(config[CONF_STATE]))
-    return var
-
 
 @automation.register_action(
     "leddisplay.turn_off", DisplayVisibilityAction, LED_DISPLAY_OFF_ACTION_SCHEMA
