@@ -3,6 +3,7 @@ from esphome.components import display
 import esphome.config_validation as cv
 from esphome.const import (
     CONF_ID,
+    CONG_INTENSITY,
     CONF_LAMBDA,
     CONF_STATE,
 )
@@ -36,6 +37,7 @@ CONFIG_SCHEMA = (
     display.BASIC_DISPLAY_SCHEMA.extend(
         {
             cv.GenerateID(): cv.declare_id(LedDisplayComponent),
+            cv.Optional(CONF_INTENSITY, default=50): cv.int_range(0, 100, min_included=True, max_included=True),
             cv.Optional(CONF_SCROLL_MODE, default="CONTINUOUS"): cv.enum(
                 SCROLL_MODES, upper=True
             ),
@@ -54,13 +56,11 @@ CONFIG_SCHEMA = (
     .extend(cv.polling_component_schema("500ms"))
 )
 
-
-####cv.Optional(CONF_BRIGHTNESS, default=50): cv.int_range(0, 100, min_included=True, max_included=True),
-
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await display.register_display(var, config)
 
+    cg.add(var.set_intensity(config[CONF_INTENSITY]))
     cg.add(var.set_scroll_mode(config[CONF_SCROLL_MODE]))
     cg.add(var.set_scroll(config[CONF_SCROLL_ENABLE]))
     cg.add(var.set_scroll_speed(config[CONF_SCROLL_SPEED]))
@@ -73,3 +73,63 @@ async def to_code(config):
         )
         cg.add(var.set_writer(lambda_))
 
+
+LED_DISPLAY_OFF_ACTION_SCHEMA = automation.maybe_simple_id(
+    {
+        cv.GenerateID(): cv.use_id(LedDisplayComponent),
+        cv.Optional(CONF_STATE, default=False): False,
+    }
+)
+
+LED_DISPLAY_ON_ACTION_SCHEMA = automation.maybe_simple_id(
+    {
+        cv.GenerateID(): cv.use_id(LedDisplayComponent),
+        cv.Optional(CONF_STATE, default=True): True,
+    }
+)
+
+@automation.register_action(
+    "leddisplay.invert_off", DisplayInvertAction, LED_DISPLAY_OFF_ACTION_SCHEMA
+)
+@automation.register_action(
+    "leddisplay.invert_on", DisplayInvertAction, LED_DISPLAY_ON_ACTION_SCHEMA
+)
+async def leddisplay_invert_to_code(config, action_id, template_arg, args):
+    var = cg.new_Pvariable(action_id, template_arg)
+    await cg.register_parented(var, config[CONF_ID])
+    cg.add(var.set_state(config[CONF_STATE]))
+    return var
+
+
+@automation.register_action(
+    "leddisplay.turn_off", DisplayVisibilityAction, LED_DISPLAY_OFF_ACTION_SCHEMA
+)
+@automation.register_action(
+    "leddisplay.turn_on", DisplayVisibilityAction, LED_DISPLAY_ON_ACTION_SCHEMA
+)
+async def leddisplay_visible_to_code(config, action_id, template_arg, args):
+    var = cg.new_Pvariable(action_id, template_arg)
+    await cg.register_parented(var, config[CONF_ID])
+    cg.add(var.set_state(config[CONF_STATE]))
+    return var
+
+
+LED_DISPLAY_INTENSITY_SCHEMA = cv.maybe_simple_value(
+    {
+        cv.GenerateID(): cv.use_id(LedDisplayComponent),
+        cv.Optional(CONF_INTENSITY, default=50): cv.templatable(
+            cv.int_range(min=0, max=100, min_included=True, max_included=True)
+        ),
+    },
+    key=CONF_INTENSITY,
+)
+
+@automation.register_action(
+    "leddisplay.intensity", DisplayIntensityAction, LED_DISPLAY_INTENSITY_SCHEMA
+)
+async def leddisplay_intensity_to_code(config, action_id, template_arg, args):
+    var = cg.new_Pvariable(action_id, template_arg)
+    await cg.register_parented(var, config[CONF_ID])
+    template_ = await cg.templatable(config[CONF_INTENSITY], args, cg.uint8)
+    cg.add(var.set_state(template_))
+    return var
