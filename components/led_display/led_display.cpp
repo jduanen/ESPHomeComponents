@@ -117,7 +117,7 @@ void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color
   if ((y >= this->get_height_internal()) || (y < 0) || (x < 0)) return;
 
   this->frameBuffer_[y][x] = ledColor;
-  ESP_LOGV(TAG, "Draw Abs: x=%d, y=%d, c=0x%x (0x%x)", x, y, color, ledColor);
+  ESP_LOGVV(TAG, "Draw Abs: x=%d, y=%d, c=0x%x (0x%x)", x, y, color, ledColor);
 };
 
 void LedDisplayComponent::update() {
