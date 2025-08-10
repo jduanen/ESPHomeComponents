@@ -49,7 +49,7 @@ static const LedColor_t AMBER_LED_COLOR = (GREEN_LED_COLOR | RED_LED_COLOR);
 static const uint8_t LED_DISP_HEIGHT = 7;
 static const uint8_t LED_DISP_WIDTH = 85;
 
-static const uint MAX_LEDS_ON_DELAY = 5000;  // 5 msec
+static const uint MAX_LEDS_ON_DELAY = 2500;  // 2.5 msec
 static const uint MIN_LEDS_ON_DELAY = 1;     // 1 usec
 
 
