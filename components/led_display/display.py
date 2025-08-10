@@ -120,7 +120,7 @@ LED_DISPLAY_INTENSITY_SCHEMA = cv.maybe_simple_value(
 )
 
 @automation.register_action(
-    "leddisplay.intensity", DisplayIntensityAction, LED_DISPLAY_INTENSITY_SCHEMA
+    "leddisplay.set_intensity", DisplayIntensityAction, LED_DISPLAY_INTENSITY_SCHEMA
 )
 async def leddisplay_intensity_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
