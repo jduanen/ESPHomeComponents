@@ -39,7 +39,7 @@ template<typename... Ts> class DisplayReverseAction : public Action<Ts...>, publ
   }
 };
 
-template<typename... Ts> class DisplayIntensityAction : public Action<Ts...>, public Parented<MAX7219Component> {
+template<typename... Ts> class DisplayIntensityAction : public Action<Ts...>, public Parented<LedDisplayComponent> {
  public:
   TEMPLATABLE_VALUE(uint8_t, state)
 
@@ -49,5 +49,5 @@ template<typename... Ts> class DisplayIntensityAction : public Action<Ts...>, pu
   }
 };
 
-}  // namespace max7219digit
+}  // namespace led_display
 }  // namespace esphome
