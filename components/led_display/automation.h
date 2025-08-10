@@ -29,16 +29,6 @@ template<typename... Ts> class DisplayVisibilityAction : public Action<Ts...>, p
   }
 };
 
-template<typename... Ts> class DisplayReverseAction : public Action<Ts...>, public Parented<LedDisplayComponent> {
- public:
-  TEMPLATABLE_VALUE(bool, state)
-
-  void play(Ts... x) override {
-    bool state = this->state_.value(x...);
-    this->parent_->set_reverse(state);
-  }
-};
-
 template<typename... Ts> class DisplayIntensityAction : public Action<Ts...>, public Parented<LedDisplayComponent> {
  public:
   TEMPLATABLE_VALUE(uint8_t, state)
