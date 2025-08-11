@@ -94,6 +94,8 @@ public:
   void set_scroll_dwell(uint16_t dwell) { this->scrollDwell_ = dwell; };
   void set_scroll_delay(uint16_t delay) { this->scrollDelay_ = delay; };
 
+  void set_flip_x(bool flipX) { this->flipX_ = flipX; };
+
   void turn_on_off(bool onOff) { this->displayOn_ = onOff; };
 
   void invert_on_off(bool onOff) { this->invert_ = onOff; };
@@ -113,6 +115,8 @@ protected:
   bool update_ = false;
 
   uint16_t oldBufferWidth_;
+
+  bool flipX_;
 
   bool displayOn_ = false;
 

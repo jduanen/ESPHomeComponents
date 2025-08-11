@@ -3,6 +3,7 @@ import esphome.codegen as cg
 from esphome.components import display
 import esphome.config_validation as cv
 from esphome.const import (
+    CONF_FLIP_X,
     CONF_ID,
     CONF_INTENSITY,
     CONF_LAMBDA,
@@ -52,6 +53,7 @@ CONFIG_SCHEMA = (
             cv.Optional(
                 CONF_SCROLL_DWELL, default="1000ms"
             ): cv.positive_time_period_milliseconds,
+            cv.Optional(CONF_FLIP_X, default=False): cv.boolean,
         }
     )
     .extend(cv.polling_component_schema("500ms"))   #### TODO think about this
@@ -67,6 +69,7 @@ async def to_code(config):
     cg.add(var.set_scroll_speed(config[CONF_SCROLL_SPEED]))
     cg.add(var.set_scroll_dwell(config[CONF_SCROLL_DWELL]))
     cg.add(var.set_scroll_delay(config[CONF_SCROLL_DELAY]))
+    cg.add(var.set_flip_x(config[CONF_FLIP_X]))
 
     if CONF_LAMBDA in config:
         lambda_ = await cg.process_lambda(
