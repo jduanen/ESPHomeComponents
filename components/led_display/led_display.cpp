@@ -181,9 +181,10 @@ void LedDisplayComponent::loop() {
 
   // if got here, then still scrolling, check if ready to take the next step
   if (msecSinceLastScroll >= this->scrollSpeed_) {
-    ESP_LOGVV(TAG, "Call to scroll left action");
+    ESP_LOGVV(TAG, "Call to scroll left action; since last scroll: %u msec, stepsLeft: %u",
+              msecSinceLastScroll, this->stepsLeft_);
     this->lastScroll_ = now;
-    this->scrollLeft_();
+////    this->scrollLeft_();
     this->display_();
   }
 };
