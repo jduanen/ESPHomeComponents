@@ -4,6 +4,7 @@
 #include "esphome/core/time.h"
 #include "esphome/components/display/display_buffer.h"
 
+#include <numeric>  //// TMP TMP TMP
 #include <vector>
 
 /*
