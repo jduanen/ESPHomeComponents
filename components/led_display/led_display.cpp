@@ -4,6 +4,9 @@
 namespace esphome {
 namespace led_display {
 
+
+float LedDisplayComponent::get_setup_priority() const { return setup_priority::PROCESSOR; };
+
 void LedDisplayComponent::setup() {
   pinMode(ROW_BIT_0, OUTPUT);
   pinMode(ROW_BIT_1, OUTPUT);
