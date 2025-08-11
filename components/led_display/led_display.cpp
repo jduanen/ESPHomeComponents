@@ -181,11 +181,14 @@ void LedDisplayComponent::loop() {
 
   // if got here, then still scrolling, check if ready to take the next step
   if (msecSinceLastScroll >= this->scrollSpeed_) {
-    ESP_LOGVV(TAG, "Call to scroll left action; since last scroll: %u msec, stepsLeft: %u",
+    ESP_LOGVV(TAG, "Call to scroll left action; time since last scroll: %u msec, stepsLeft: %u",
               msecSinceLastScroll, this->stepsLeft_);
     this->lastScroll_ = now;
-////    this->scrollLeft_();
+    this->scrollLeft_();
     this->display_();
+  } else {
+    ESP_LOGVV(TAG, "Not ready to do the next scroll step; %u", msecSinceLastScroll);
+    this->display_();  //// FIXME ????
   }
 };
 
@@ -201,7 +204,7 @@ void LedDisplayComponent::scrollLeft_() {
       // update required, so append a black pixel to the end of the row to ensure the row's long enough
       this->frameBuffer_[row].push_back(this->background_);
       // circular rotate the row by one more than the number of steps left
-      // because an update ????
+      // because an update requires ????
       scroll(this->frameBuffer_[row],
              (this->stepsLeft_ + 1) % (this->frameBuffer_[row].size()));
     } else {
@@ -212,7 +215,7 @@ void LedDisplayComponent::scrollLeft_() {
   this->update_ = false;
   this->stepsLeft_++;
   this->stepsLeft_ %= this->frameBuffer_[0].size();
-  ESP_LOGVV(TAG, "Scrolled left");
+  ESP_LOGVV(TAG, "Scrolled left; stepsLeft: %u", this->stepsLeft_);
 };
 
 void LedDisplayComponent::display_() {
