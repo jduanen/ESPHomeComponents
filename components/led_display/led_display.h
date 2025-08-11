@@ -94,7 +94,10 @@ public:
   void set_scroll_dwell(uint16_t dwell) { this->scrollDwell_ = dwell; };
   void set_scroll_delay(uint16_t delay) { this->scrollDelay_ = delay; };
 
-  void turn_on_off(bool onOff);
+  void turn_on_off(bool onOff) { this->displayOn_ = onOff; };
+
+  void invert_on_off(bool onOff) { this->invert_ = onOff; };
+  void invert_on_off() { this->invert_ = !this->invert_; };
 
   void intensity(uint8_t intensity) {
     this->intensity_ = intensity;
@@ -112,6 +115,8 @@ protected:
   uint16_t oldBufferWidth_;
 
   bool displayOn_ = false;
+
+  bool invert_ = false;
 
   uint8_t intensity_;  //// Intensity of the display from 0 to 100 (brightest)
   uint brightness_;    //// Intensity mapped into num of uSec linger time

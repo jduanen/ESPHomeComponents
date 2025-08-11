@@ -188,10 +188,6 @@ void LedDisplayComponent::loop() {
   }
 };
 
-void LedDisplayComponent::turn_on_off(bool onOff) {
-  this->displayOn_ = onOff;
-};
-
 void LedDisplayComponent::scrollLeft_() {
   // define a lambda to rotate a line left by the given number of steps
   auto scroll = [&](std::vector<uint8_t> &line, uint16_t steps) {
@@ -278,9 +274,10 @@ void LedDisplayComponent::disableRows_() {
 
 void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   // clock in and latch all of the given row's pixel data
+  uint8_t pixelVal = ((this->invert_) ? 0 : 1);
   for (int col = (this->get_width_internal() - 1); (col >= 0); col--) {
       digitalWrite(COL_CLOCK, LOW);
-      digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? 1 : 0));
+      digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? pixelVal : ~pixelVal));
       digitalWrite(COL_CLOCK, HIGH);
   }
 
