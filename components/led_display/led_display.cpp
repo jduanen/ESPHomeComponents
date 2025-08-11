@@ -200,7 +200,8 @@ void LedDisplayComponent::scrollLeft_() {
 
   // scroll by circular rotating all rows left
   for (int row = 0; row < this->get_height_internal(); row++) {
-    uint32_t sum = std::accumulate(arr, arr + len, 0u);  //// TMP TMP TMP
+    size_t len = sizeof(this->frameBuffer_) / sizeof(this->frameBuffer_[0]);
+    uint32_t sum = std::accumulate(this->frameBuffer_, this->frameBuffer_ + len, 0u);  //// TMP TMP TMP
     ESP_LOGVV(TAG, "scrollLeft Pre: %u, sum(row: %u) = %u", this->update_, row, sum);  //// TMP TMP TMP
     if (this->update_) {
       // update required, so append a black pixel to the end of the row to ensure the row's long enough
@@ -213,7 +214,8 @@ void LedDisplayComponent::scrollLeft_() {
       // no update required, so just rotate the current row by one
       scroll(this->frameBuffer_[row], 1);
     }
-    sum = std::accumulate(arr, arr + len, 0u);  //// TMP TMP TMP
+    size_t len = sizeof(this->frameBuffer_) / sizeof(this->frameBuffer_[0]);
+    sum = std::accumulate(this->frameBuffer_, this->frameBuffer_ + len, 0u);  //// TMP TMP TMP
     ESP_LOGVV(TAG, "scrollLeft Post: sum(row: %u) = %u", row, sum);  //// TMP TMP TMP
   }
   this->update_ = false;
