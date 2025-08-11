@@ -34,7 +34,7 @@ void LedDisplayComponent::setup() {
   this->update_ = false;
   this->oldBufferWidth_ = 0;
 
-  this->set_scroll(false);
+//  this->set_scroll(true);
   this->lastScroll_ = 0;
   this->stepsLeft_ = 0;
   this->lastLoop_ = App.get_loop_component_start_time();
@@ -140,7 +140,7 @@ void LedDisplayComponent::update() {
 void LedDisplayComponent::loop() {
   const uint32_t now = App.get_loop_component_start_time();
   const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
-  ESP_LOGVV(TAG, "Refresh rate: %f", (1000.0 / msecSinceLastLoop));
+#  ESP_LOGVV(TAG, "Refresh rate: %f", (1000.0 / msecSinceLastLoop));
   this->lastLoop_ = msecSinceLastLoop;
   const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
 
@@ -275,6 +275,7 @@ void LedDisplayComponent::disableRows_() {
 
 void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   // clock in and latch all of the given row's pixel data
+  //// FIXME make invert map BLK->AMB, RED->BLK, GRN->BLK????
   uint8_t hi = (this->invert_ ? 0 : 1);
   uint8_t lo = (this->invert_ ? 1 : 0);
   for (int col = (this->get_width_internal() - 1); (col >= 0); col--) {
