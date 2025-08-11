@@ -188,7 +188,7 @@ void LedDisplayComponent::loop() {
     this->display_();
   } else {
     ESP_LOGVV(TAG, "Not ready to do the next scroll step; %u", msecSinceLastScroll);
-    this->display_();  //// FIXME ????
+    this->display_();
   }
 };
 
