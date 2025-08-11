@@ -3,7 +3,6 @@ import esphome.codegen as cg
 from esphome.components import display
 import esphome.config_validation as cv
 from esphome.const import (
-    CONF_FLIP_X,
     CONF_ID,
     CONF_INTENSITY,
     CONF_LAMBDA,
@@ -20,6 +19,8 @@ CONF_SCROLL_ENABLE = "scroll_enable"
 CONF_SCROLL_SPEED = "scroll_speed"
 CONF_SCROLL_DELAY = "scroll_delay"
 CONF_SCROLL_DWELL = "scroll_dwell"
+
+CONF_FLIP_X = "flip_x"
 
 
 integration_ns = cg.esphome_ns.namespace("led_display")
