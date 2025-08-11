@@ -202,11 +202,14 @@ void LedDisplayComponent::scrollLeft_() {
   for (int row = 0; row < this->get_height_internal(); row++) {
     if (this->update_) {
       // update required, so append a black pixel to the end of the row to ensure the row's long enough
+      ESP_LOGVV(TAG, "scrollLeft: Update row: %u", row);
+      /*****
       this->frameBuffer_[row].push_back(this->background_);
       // circular rotate the row by one more than the number of steps left
       // because an update requires ????
       scroll(this->frameBuffer_[row],
              (this->stepsLeft_ + 1) % (this->frameBuffer_[row].size()));
+      ****/
     } else {
       // no update required, so just rotate the current row by one
       scroll(this->frameBuffer_[row], 1);
