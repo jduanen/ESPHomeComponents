@@ -125,6 +125,7 @@ void LedDisplayComponent::update() {
 
   // reset the width of the framebuffer's rows and clear them
   for (int row = 0; (row < this->get_height_internal()); row++) {
+    this->frameBuffer_[row].clear();
     this->frameBuffer_[row].resize(this->get_width_internal(), this->background_);
   }
 
