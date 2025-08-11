@@ -160,7 +160,8 @@ void LedDisplayComponent::loop() {
 
   // check if scrolling is to be started and enough delay time has elapsed
   if ((this->stepsLeft_ == 0) && (msecSinceLastScroll < this->scrollDelay_)) {
-    ESP_LOGVV(TAG, "At first step. Waiting for scroll delay");
+    ESP_LOGVV(TAG, "At first step. Waiting for scroll delay (%u < %u)",
+              msecSinceLastScroll, this->scrollDelay_);
     this->display_();
     return;
   }
