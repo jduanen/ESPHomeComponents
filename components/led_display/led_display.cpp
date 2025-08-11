@@ -140,7 +140,7 @@ void LedDisplayComponent::update() {
 void LedDisplayComponent::loop() {
   const uint32_t now = App.get_loop_component_start_time();
   const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
-#  ESP_LOGVV(TAG, "Refresh rate: %f", (1000.0 / msecSinceLastLoop));
+//  ESP_LOGVV(TAG, "Refresh rate: %f", (1000.0 / msecSinceLastLoop));
   this->lastLoop_ = msecSinceLastLoop;
   const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
 
