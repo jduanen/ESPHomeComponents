@@ -132,9 +132,23 @@ protected:
   optional<LedDisplayWriter_t> writerLocal_{};
 
   void scrollLeft_();
-  void scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell);
-  void scroll_(bool onOff, ScrollMode mode);
-  void scroll_(bool onOff);
+
+  void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell) {
+    this->set_scroll(onOff);
+    this->set_scroll_mode(mode);
+    this->set_scroll_speed(speed);
+    this->set_scroll_dwell(dwell);
+    this->set_scroll_delay(delay);
+  };
+
+  void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode) {
+    this->set_scroll(onOff);
+    this->set_scroll_mode(mode);
+  };
+
+  void LedDisplayComponent::scroll_(bool onOff) {
+    this->set_scroll(onOff);
+  };
 
   LedColor_t colorToLedColor(Color color);
 

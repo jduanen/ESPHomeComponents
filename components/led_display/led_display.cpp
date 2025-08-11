@@ -34,11 +34,9 @@ void LedDisplayComponent::setup() {
   this->update_ = false;
   this->oldBufferWidth_ = 0;
 
-//  this->set_scroll(true);
   this->lastScroll_ = 0;
   this->stepsLeft_ = 0;
   this->lastLoop_ = App.get_loop_component_start_time();
-//  this->set_intensity(50);  // default value
 
   this->display_();
 
@@ -132,15 +130,15 @@ void LedDisplayComponent::update() {
 
   if (this->writerLocal_.has_value()) {
     (*this->writerLocal_)(*this);
-    ESP_LOGV(TAG, "Executed Lambda drawing function");
+    ESP_LOGVV(TAG, "Executed Lambda drawing function");
   }
-  ESP_LOGV(TAG, "Update indicated, framebuffer cleared, and given lambda executed");
+  ESP_LOGVV(TAG, "Update indicated, framebuffer cleared, and given lambda executed");
 };
 
 void LedDisplayComponent::loop() {
   const uint32_t now = App.get_loop_component_start_time();
   const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
-//  ESP_LOGVV(TAG, "Refresh rate: %f", (1000.0 / msecSinceLastLoop));
+  ESP_LOGVV(TAG, "Refresh rate: %f (%u)", (1000.0 / msecSinceLastLoop), msecSinceLastLoop);
   this->lastLoop_ = msecSinceLastLoop;
   const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
 
@@ -213,23 +211,6 @@ void LedDisplayComponent::scrollLeft_() {
   this->stepsLeft_++;
   this->stepsLeft_ %= this->frameBuffer_[0].size();
   ESP_LOGVV(TAG, "Scrolled left");
-};
-
-void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell) {
-  this->set_scroll(onOff);
-  this->set_scroll_mode(mode);
-  this->set_scroll_speed(speed);
-  this->set_scroll_dwell(dwell);
-  this->set_scroll_delay(delay);
-};
-
-void LedDisplayComponent::scroll_(bool onOff, ScrollMode mode) {
-  this->set_scroll(onOff);
-  this->set_scroll_mode(mode);
-};
-
-void LedDisplayComponent::scroll_(bool onOff) {
-  this->set_scroll(onOff);
 };
 
 void LedDisplayComponent::display_() {
