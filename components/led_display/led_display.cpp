@@ -226,7 +226,8 @@ void LedDisplayComponent::scrollLeft_() {
 void LedDisplayComponent::display_() {
   if (!this->displayOn_) return;
   // for each row and for both colors, shift in row data and latch it, then enable the row&color
-  for (uint row = 0; row < this->get_height_internal(); row++) {
+  for (uint r = 0; (r < this->get_height_internal()); r++) {
+    auto row = this->flipX_ ? ((this->get_height_internal() - 1) - r) : r;
     for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
       this->shiftInPixels_(color, row);
       this->enableRow_(color, row);
@@ -271,7 +272,7 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   uint8_t lo = (this->invert_ ? 1 : 0);
   for (int c = 0; (c < this->get_width_internal()); c++) {
       digitalWrite(COL_CLOCK, LOW);
-      auto col = (this->flipX_) ? ((this->get_width_internal() - 1) - c) : c;
+      auto col = this->reverse_ ? ((this->get_width_internal() - 1) - c) : c;
       digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
       digitalWrite(COL_CLOCK, HIGH);
   }
