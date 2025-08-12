@@ -52,6 +52,8 @@ void LedDisplayComponent::dump_config() {
                 "  Width: %u\n"
                 "  Intensity: %u\n"
                 "  Brightness: %u\n"
+                "  Reverse: %u\n"
+                "  Flip X: %u\n"
                 "  Scrolling On: %u\n"
                 "  Scroll Mode: %u\n"
                 "  Scroll Speed: %u\n"
@@ -60,6 +62,7 @@ void LedDisplayComponent::dump_config() {
                 this->get_height_internal(),
                 this->get_width_internal(),
                 this->intensity_, this->brightness_,
+                this->reverse_, this->flipX_,
                 this->scrollingOn_, this->scrollMode_,
                 this->scrollSpeed_, this->scrollDwell_,
                 this->scrollDelay_);
@@ -230,7 +233,7 @@ void LedDisplayComponent::display_() {
     auto row = this->flipX_ ? ((this->get_height_internal() - 1) - r) : r;
     for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
       this->shiftInPixels_(color, row);
-      this->enableRow_(color, row);
+      this->enableRow_(color, r);
       delayMicroseconds(this->brightness_);
       this->disableRows_();
     }
