@@ -272,10 +272,11 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   //// FIXME make invert map BLK->AMB, RED->BLK, GRN->BLK????
   uint8_t hi = (this->invert_ ? 0 : 1);
   uint8_t lo = (this->invert_ ? 1 : 0);
-  for (int col = 0; (col < this->get_width_internal()); col++) {
-      digitalWrite(COL_CLOCK, LOW);
-      digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
-      digitalWrite(COL_CLOCK, HIGH);
+  for (int c = 0; (c < this->get_width_internal()); c++) {
+    auto col = this->flipX_ ? c : ((this->get_width_internal() - 1) - c);
+    digitalWrite(COL_CLOCK, LOW);
+    digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
+    digitalWrite(COL_CLOCK, HIGH);
   }
 
   // strobe to latch data -- desired color of LEDs in the row are now set
