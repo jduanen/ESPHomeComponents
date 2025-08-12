@@ -269,9 +269,9 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   //// FIXME make invert map BLK->AMB, RED->BLK, GRN->BLK????
   uint8_t hi = (this->invert_ ? 0 : 1);
   uint8_t lo = (this->invert_ ? 1 : 0);
-  for (int c = 0; (c < this->get_width_internal); c++) {
+  for (int c = 0; (c < this->get_width_internal()); c++) {
       digitalWrite(COL_CLOCK, LOW);
-      auto col = (this->flipX_) ? ((this->get_width_internal - 1) - c) : c;
+      auto col = (this->flipX_) ? ((this->get_width_internal() - 1) - c) : c;
       digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
       digitalWrite(COL_CLOCK, HIGH);
   }
