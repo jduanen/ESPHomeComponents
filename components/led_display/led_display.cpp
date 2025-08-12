@@ -52,7 +52,6 @@ void LedDisplayComponent::dump_config() {
                 "  Width: %u\n"
                 "  Intensity: %u\n"
                 "  Brightness: %u\n"
-                "  Reverse: %u\n"
                 "  Flip X: %u\n"
                 "  Scrolling On: %u\n"
                 "  Scroll Mode: %u\n"
@@ -62,7 +61,7 @@ void LedDisplayComponent::dump_config() {
                 this->get_height_internal(),
                 this->get_width_internal(),
                 this->intensity_, this->brightness_,
-                this->reverse_, this->flipX_,
+                this->flipX_,
                 this->scrollingOn_, this->scrollMode_,
                 this->scrollSpeed_, this->scrollDwell_,
                 this->scrollDelay_);
@@ -273,9 +272,8 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   //// FIXME make invert map BLK->AMB, RED->BLK, GRN->BLK????
   uint8_t hi = (this->invert_ ? 0 : 1);
   uint8_t lo = (this->invert_ ? 1 : 0);
-  for (int c = 0; (c < this->get_width_internal()); c++) {
+  for (int col = 0; (col < this->get_width_internal()); col++) {
       digitalWrite(COL_CLOCK, LOW);
-      auto col = this->reverse_ ? ((this->get_width_internal() - 1) - c) : c;
       digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
       digitalWrite(COL_CLOCK, HIGH);
   }
