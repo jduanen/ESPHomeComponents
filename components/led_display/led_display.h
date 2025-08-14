@@ -46,8 +46,13 @@ static const LedColor_t RED_LED_COLOR   = 0b00000001;
 static const LedColor_t GREEN_LED_COLOR = 0b00000010;
 static const LedColor_t AMBER_LED_COLOR = (GREEN_LED_COLOR | RED_LED_COLOR);
 
-static const uint8_t LED_DISP_HEIGHT = 7;
-static const uint8_t LED_DISP_WIDTH = 85;
+static const uint8_t LED_CHAR_HEIGHT = 7;
+static const uint8_t LED_CHAR_WIDTH = 5;
+
+static const uint8_t LED_NUM_CHARS = 17;
+
+static const uint8_t LED_DISP_HEIGHT = LED_CHAR_HEIGHT;
+static const uint8_t LED_DISP_WIDTH = (LED_CHAR_WIDTH * LED_NUM_CHARS);
 
 static const uint MAX_LEDS_ON_DELAY = 2000;  // 2 msec
 static const uint MIN_LEDS_ON_DELAY = 1;     // 1 usec
@@ -109,6 +114,11 @@ public:
   };
 
   void clear();
+
+  //// TODO add printfLED() methods that take print format strings and args
+
+  uint8_t printLED(const char *str) { return this->printLED(0, str); };
+  uint8_t printLED(uint8_t startPos, const char *str);
 
 protected:
   FrameBuffer_t frameBuffer_;
