@@ -122,9 +122,6 @@ void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color
 };
 
 void LedDisplayComponent::update() {
-  // flag update needed and clear frame buffer
-  this->update_ = true;
-
   this->clear();
 
   if (this->writerLocal_.has_value()) {
@@ -192,12 +189,21 @@ void LedDisplayComponent::loop() {
 };
 
 void LedDisplayComponent::clear() {
+  // flag update needed and clear frame buffer
+  this->update_ = true;
+
   // reset the width of each of the framebuffer's rows and clear them
   for (int row = 0; (row < this->get_height_internal()); row++) {
     this->frameBuffer_[row].resize(this->get_width_internal(), this->background_);
     this->frameBuffer_[row].clear();
   }
-  ESP_LOGD(TAG, "Reset the framebuffer size and clear its rows");
+  ESP_LOGD(TAG, "Reset the framebuffer size and clear its rows");  //// TMP TMP TMP
+};
+
+uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
+//  this->clear();
+  ESP_LOGD(TAG, "printLED(): TBD");
+  return (startPos + (len(str) * LED_CHAR_WIDTH));
 };
 
 void LedDisplayComponent::scrollLeft_() {
