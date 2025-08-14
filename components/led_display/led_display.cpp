@@ -203,7 +203,7 @@ void LedDisplayComponent::clear() {
 uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
 //  this->clear();
   ESP_LOGD(TAG, "printLED(): TBD");
-  return (startPos + (len(str) * LED_CHAR_WIDTH));
+  return 0; //// (startPos + (strlen(str) * LED_CHAR_WIDTH));
 };
 
 void LedDisplayComponent::scrollLeft_() {
