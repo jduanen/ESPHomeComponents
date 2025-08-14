@@ -81,7 +81,8 @@ public:
     this->intensity_ = intensity;
     this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Set Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
-  }
+  };
+
   void set_scroll_mode(ScrollMode mode) {
     this->scrollMode_ = mode;
     ESP_LOGV(TAG, "ScrollMode: %u", mode);
@@ -106,6 +107,8 @@ public:
     this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   };
+
+  void clear();
 
 protected:
   FrameBuffer_t frameBuffer_;

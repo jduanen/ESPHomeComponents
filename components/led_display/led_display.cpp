@@ -125,11 +125,7 @@ void LedDisplayComponent::update() {
   // flag update needed and clear frame buffer
   this->update_ = true;
 
-  // reset the width of the framebuffer's rows and clear them
-  for (int row = 0; (row < this->get_height_internal()); row++) {
-    this->frameBuffer_[row].clear();
-    this->frameBuffer_[row].resize(this->get_width_internal(), this->background_);
-  }
+  this->clear();
 
   if (this->writerLocal_.has_value()) {
     (*this->writerLocal_)(*this);
@@ -193,6 +189,15 @@ void LedDisplayComponent::loop() {
     ESP_LOGVV(TAG, "Not ready to do the next scroll step; %u", msecSinceLastScroll);
     this->display_();
   }
+};
+
+void LedDisplayComponent::clear() {
+  // reset the width of each of the framebuffer's rows and clear them
+  for (int row = 0; (row < this->get_height_internal()); row++) {
+    this->frameBuffer_[row].resize(this->get_width_internal(), this->background_);
+    this->frameBuffer_[row].clear();
+  }
+  ESP_LOGD(TAG, "Reset the framebuffer size and clear its rows");
 };
 
 void LedDisplayComponent::scrollLeft_() {
