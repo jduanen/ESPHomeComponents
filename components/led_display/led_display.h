@@ -1,6 +1,6 @@
 #pragma once
 
-#include "esphome.h"
+//#include "esphome.h"
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
 #include "esphome/components/font/font.h"
@@ -32,16 +32,6 @@ enum ScrollMode {
 
 static const char *const TAG = "LedDisplay";
 
-// names of fonts to use
-// N.B. all of these must already be installed and declared in the yaml config
-static const std::string FONT_NAMES = {
-  "5x7_MT_Pixel",
-  "MatrixLight6",
-  "MatrixLight6X"
-}
-
-static const uint8_t MAX_NUM_FONTS = (sizeof(FONT_NAMES) / sizeof(FONT_NAMES[0]));
-
 static const uint8_t ROW_BIT_0  = D0;
 static const uint8_t ROW_BIT_1  = D1;
 static const uint8_t ROW_BIT_2  = D2;
@@ -69,6 +59,23 @@ static const uint8_t LED_DISP_WIDTH = (LED_CHAR_WIDTH * LED_NUM_CHARS);
 
 static const uint MAX_LEDS_ON_DELAY = 2000;  // 2 msec
 static const uint MIN_LEDS_ON_DELAY = 1;     // 1 usec
+
+static const LedColor_t COLORS_[] = {
+  BLACK_LED_COLOR,
+  RED_LED_COLOR,
+  GREEN_LED_COLOR,
+  AMBER_LED_COLOR
+};
+
+// names of fonts to use
+// N.B. all of these must already be installed and declared in the yaml config
+static const std::string FONT_NAMES[] = {
+  "5x7_MT_Pixel",
+  "MatrixLight6",
+  "MatrixLight6X"
+}
+
+static const uint8_t MAX_NUM_FONTS = (sizeof(FONT_NAMES) / sizeof(FONT_NAMES[0]));
 
 
 class LedDisplayComponent;
@@ -159,13 +166,6 @@ protected:
   uint16_t scrollDelay_;
   uint16_t scrollSpeed_;
   ScrollMode scrollMode_;
-
-  static const LedColor_t COLORS_[] = {
-    BLACK_LED_COLOR,
-    RED_LED_COLOR,
-    GREEN_LED_COLOR,
-    AMBER_LED_COLOR
-  };
 
   static const Font FONT_REFS_[MAX_NUM_FONTS];
 
