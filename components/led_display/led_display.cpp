@@ -236,10 +236,8 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         continue;
       }
       if (!strBuf.empty()) {
-        xPos = this->print(xPos, 0,
-                           this->currentFontRef_,
-                           this->currentColor_,
-                           strBuf.c_str());
+        this->print(xPos, 0, this->currentFontRef_, this->currentColor_, strBuf.c_str());
+        xPos += this->currentFontRef->get_string_width(strBuf.c_str());
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
       }
@@ -251,14 +249,11 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
     // add char to string buffer
     buffer += str[strIndx++];
   }
-  xPos = this->print(xPos, 0,
-                     this->currentFontRef_,
-                     this->currentColor_,
-                     strBuf.c_str());
+  this->print(xPos, 0, this->currentFontRef_, this->currentColor_, strBuf.c_str());
+  xPos += this->currentFontRef->get_string_width(strBuf.c_str());
   ESP_LOGD(TAG, "final printLED: %s (%u)", strBuf.c_str(), xPos);
   return xPos;
 };
-
 
 void LedDisplayComponent::scrollLeft_() {
   // define a lambda to rotate a line left by the given number of steps
