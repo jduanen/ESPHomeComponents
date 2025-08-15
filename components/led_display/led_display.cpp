@@ -39,7 +39,7 @@ void LedDisplayComponent::setup() {
   this->lastLoop_ = App.get_loop_component_start_time();
 
   for (size_t i = 0; (i < MAX_NUM_FONTS); i++) {
-    this->FONT_REFS_[i] = id(FONTS_NAMES[i]);
+    this->FONT_REFS_[i] = id(FONT_NAMES[i]);
   }
 
   this->currentColor_ = COLORS[1];  // defaults to Red
