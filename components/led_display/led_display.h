@@ -1,6 +1,5 @@
 #pragma once
 
-#include "esphome.h"
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
 #include "esphome/components/font/font.h"
@@ -60,7 +59,7 @@ static const uint8_t LED_DISP_WIDTH = (LED_CHAR_WIDTH * LED_NUM_CHARS);
 static const uint MAX_LEDS_ON_DELAY = 2000;  // 2 msec
 static const uint MIN_LEDS_ON_DELAY = 1;     // 1 usec
 
-static const LedColor_t COLORS_[] = {
+static const LedColor_t COLORS[] = {
   BLACK_LED_COLOR,
   RED_LED_COLOR,
   GREEN_LED_COLOR,

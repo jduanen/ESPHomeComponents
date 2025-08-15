@@ -42,8 +42,8 @@ void LedDisplayComponent::setup() {
     this->FONT_REFS_[i] = id(FONTS_NAMES[i]);
   }
 
-  this->currentFont_ = this->FONT_REFS_[0];  // defaults to 5x7
-  this->currentColor_ = this->COLORS_[1];    // defaults to Red
+  this->currentFontRef_ = this->FONT_REFS_[0];  // defaults to 5x7
+  this->currentColor_ = this->COLORS[1];        // defaults to Red
 
   this->display_();
 
@@ -243,8 +243,8 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
       }
-      this->currentFont_ = this->FONT_REFS_[fontNum];
-      this->currentColor_ = this->COLORS_[colorNum];
+      this->currentFontRef_ = this->FONT_REFS_[fontNum];
+      this->currentColor_ = this->COLORS[colorNum];
       continue;
     }
 
