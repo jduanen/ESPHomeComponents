@@ -38,6 +38,13 @@ void LedDisplayComponent::setup() {
   this->stepsLeft_ = 0;
   this->lastLoop_ = App.get_loop_component_start_time();
 
+  for (size_t i = 0; (i < MAX_NUM_FONTS); i++) {
+    this->FONT_REFS_[i] = id(FONTS_NAMES[i]);
+  }
+
+  this->currentFont_ = this->FONT_REFS_[0];  // defaults to 5x7
+  this->currentColor_ = this->COLORS_[1];    // defaults to Red
+
   this->display_();
 
   this->displayOn_ = true;
@@ -201,10 +208,57 @@ void LedDisplayComponent::clear() {
 };
 
 uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
-//  this->clear();
-  ESP_LOGD(TAG, "printLED(): TBD");
-  return 0; //// (startPos + (strlen(str) * LED_CHAR_WIDTH));
+  uint8_t xPos = 0;
+  size_t strIndx = 0;
+  std::string strBuf;
+
+  this->clear();
+
+  // look for escape sequences of the form: "\033[<fontNum>;<colorNum>m"
+  while (str[strIndx] != '\0') {
+    if (str[strIndx] == '\033') {
+      if (str[strIndx++] != '[') {
+        ESP_LOGW(TAG, "Invalid escape sequence, missing '['");
+        continue;
+      }
+      auto fontNum = (str[strIndx++] - '0');
+      if ((fontNum < 0) || (fontNum >= MAX_NUM_FONTS)) {
+        ESP_LOGW(TAG, "Invalid font number: %d", str[strIndx - 1]);
+        continue;
+      }
+      if (str[strIndx++] != ';') {
+        ESP_LOGW(TAG, "Invalid escape sequence, missing ';'");
+        continue;
+      }
+      auto colorNum = (str[strIndx++] - '0');
+      if ((colorNum < 0) || (colorNum >= MAX_NUM_COLORS)) {
+        ESP_LOGW(TAG, "Invalid color number: %c", str[strIndx - 1]);
+        continue;
+      }
+      if (!strBuf.empty()) {
+        xPos = this->print(xPos, 0,
+                           this->currentFontRef_,
+                           this->currentColor_,
+                           strBuf.c_str());
+        ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
+        strBuf.clear();
+      }
+      this->currentFont_ = this->FONT_REFS_[fontNum];
+      this->currentColor_ = this->COLORS_[colorNum];
+      continue;
+    }
+
+    // add char to string buffer
+    buffer += str[strIndx++];
+  }
+  xPos = this->print(xPos, 0,
+                     this->currentFontRef_,
+                     this->currentColor_,
+                     strBuf.c_str());
+  ESP_LOGD(TAG, "final printLED: %s (%u)", strBuf.c_str(), xPos);
+  return xPos;
 };
+
 
 void LedDisplayComponent::scrollLeft_() {
   // define a lambda to rotate a line left by the given number of steps

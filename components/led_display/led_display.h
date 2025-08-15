@@ -1,7 +1,9 @@
 #pragma once
 
+#include "esphome.h"
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
+#include "esphome/components/font/font.h"
 #include "esphome/components/display/display_buffer.h"
 
 #include <numeric>  //// TMP TMP TMP
@@ -30,6 +32,16 @@ enum ScrollMode {
 
 static const char *const TAG = "LedDisplay";
 
+// names of fonts to use
+// N.B. all of these must already be installed and declared in the yaml config
+static const std::string FONT_NAMES = {
+  "5x7_MT_Pixel",
+  "MatrixLight6",
+  "MatrixLight6X"
+}
+
+static const uint8_t MAX_NUM_FONTS = (sizeof(FONT_NAMES) / sizeof(FONT_NAMES[0]));
+
 static const uint8_t ROW_BIT_0  = D0;
 static const uint8_t ROW_BIT_1  = D1;
 static const uint8_t ROW_BIT_2  = D2;
@@ -45,6 +57,7 @@ static const LedColor_t BLACK_LED_COLOR = 0b00000000;
 static const LedColor_t RED_LED_COLOR   = 0b00000001;
 static const LedColor_t GREEN_LED_COLOR = 0b00000010;
 static const LedColor_t AMBER_LED_COLOR = (GREEN_LED_COLOR | RED_LED_COLOR);
+static const uint8_t MAX_NUM_COLORS = 4;
 
 static const uint8_t LED_CHAR_HEIGHT = 7;
 static const uint8_t LED_CHAR_WIDTH = 5;
@@ -146,6 +159,18 @@ protected:
   uint16_t scrollDelay_;
   uint16_t scrollSpeed_;
   ScrollMode scrollMode_;
+
+  static const LedColor_t COLORS_[] = {
+    BLACK_LED_COLOR,
+    RED_LED_COLOR,
+    GREEN_LED_COLOR,
+    AMBER_LED_COLOR
+  };
+
+  static const Font FONT_REFS_[MAX_NUM_FONTS];
+
+  Font &currentFontRef_;
+  LedColor_t currentColor_;
 
   optional<LedDisplayWriter_t> writerLocal_{};
 
