@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "esphome.h"
+#include "esphome.h"
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
 #include "esphome/components/font/font.h"
@@ -73,7 +73,7 @@ static const std::string FONT_NAMES[] = {
   "5x7_MT_Pixel",
   "MatrixLight6",
   "MatrixLight6X"
-}
+};
 
 static const uint8_t MAX_NUM_FONTS = (sizeof(FONT_NAMES) / sizeof(FONT_NAMES[0]));
 
