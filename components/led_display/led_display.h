@@ -4,7 +4,6 @@
 #include "esphome/core/time.h"
 #include "esphome/components/font/font.h"
 #include "esphome/components/display/display_buffer.h"
-#include "esphome.h"
 
 //#include <numeric>  //// TMP TMP TMP
 #include <vector>
@@ -18,6 +17,8 @@
 namespace esphome {
 namespace led_display {
 
+
+using esphome::font::Font;
 
 typedef uint8_t LedColor_t;
 
