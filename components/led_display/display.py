@@ -3,6 +3,7 @@ import esphome.codegen as cg
 from esphome.components import display
 import esphome.config_validation as cv
 from esphome.const import (
+    CONF_FONTS,
     CONF_ID,
     CONF_INTENSITY,
     CONF_LAMBDA,
@@ -40,6 +41,7 @@ CONFIG_SCHEMA = (
     display.BASIC_DISPLAY_SCHEMA.extend(
         {
             cv.GenerateID(): cv.declare_id(LedDisplayComponent),
+            cv.Required(CONF_FONTS): cv.ensure_list(cv.use_id(cv.declare_id(cg.Global))),  # validate list of fonts
             cv.Optional(CONF_INTENSITY, default=50): cv.int_range(0, 100, min_included=True, max_included=True),
             cv.Optional(CONF_SCROLL_MODE, default="CONTINUOUS"): cv.enum(
                 SCROLL_MODES, upper=True
@@ -61,9 +63,14 @@ CONFIG_SCHEMA = (
 )
 
 async def to_code(config):
+    fonts = []
+    for fontId in config[CONF_FONTS]:
+        font = await cg.get_variable(fontId)
+        fonts.append(font)
     var = cg.new_Pvariable(config[CONF_ID])
     await display.register_display(var, config)
 
+    cg.add(var.set_fonts(fonts))
     cg.add(var.set_intensity(config[CONF_INTENSITY]))
     cg.add(var.set_scroll_mode(config[CONF_SCROLL_MODE]))
     cg.add(var.set_scroll(config[CONF_SCROLL_ENABLE]))
