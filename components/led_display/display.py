@@ -23,6 +23,7 @@ CONF_SCROLL_DWELL = "scroll_dwell"
 CONF_FLIP_X = "flip_x"
 CONF_FONTS = "fonts"
 
+from esphome.components import font
 
 integration_ns = cg.esphome_ns.namespace("led_display")
 ScrollMode = integration_ns.enum("ScrollMode")
