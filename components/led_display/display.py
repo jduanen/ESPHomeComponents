@@ -41,7 +41,7 @@ CONFIG_SCHEMA = (
     display.BASIC_DISPLAY_SCHEMA.extend(
         {
             cv.GenerateID(): cv.declare_id(LedDisplayComponent),
-            cv.Required(CONF_FONTS): cv.ensure_list(cv.use_id(cv.declare_id(cg.Global))),  # validate list of fonts
+            cv.Required(CONF_FONTS): cv.ensure_list(cv.use_id(font.font_ns.class_('Font'))),
             cv.Optional(CONF_INTENSITY, default=50): cv.int_range(0, 100, min_included=True, max_included=True),
             cv.Optional(CONF_SCROLL_MODE, default="CONTINUOUS"): cv.enum(
                 SCROLL_MODES, upper=True
