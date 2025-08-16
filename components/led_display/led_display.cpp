@@ -38,9 +38,13 @@ void LedDisplayComponent::setup() {
   this->stepsLeft_ = 0;
   this->lastLoop_ = App.get_loop_component_start_time();
 
-  for (size_t i = 0; (i < MAX_NUM_FONTS); i++) {
-    this->FONT_REFS_[i] = id(FONT_NAMES[i]);
-  }
+  // N.B. all of these fonts must already be installed and declared in the yaml config
+  FONT_REFS_[0] = id(5x7_MT_Pixel);
+  FONT_REFS_[1] = id(MatrixLight6);
+  FONT_REFS_[2] = id(MatrixLight6X);
+
+  this-> = (sizeof(FONT_NAMES) / sizeof(FONT_NAMES[0]));
+
 
   this->currentColor_ = COLORS[1];  // defaults to Red
   this->currentFontRef_ = this->FONT_REFS_[0];  // defaults to 5x7

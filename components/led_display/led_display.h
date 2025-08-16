@@ -68,15 +68,7 @@ static const LedColor_t COLORS[] = {
   AMBER_LED_COLOR
 };
 
-// names of fonts to use
-// N.B. all of these must already be installed and declared in the yaml config
-static const std::string FONT_NAMES[] = {
-  "5x7_MT_Pixel",
-  "MatrixLight6",
-  "MatrixLight6X"
-};
-
-static const uint8_t MAX_NUM_FONTS = (sizeof(FONT_NAMES) / sizeof(FONT_NAMES[0]));
+static const uint8_t MAX_NUM_FONTS = 4;
 
 
 class LedDisplayComponent;
@@ -168,8 +160,7 @@ protected:
   uint16_t scrollSpeed_;
   ScrollMode scrollMode_;
 
-  static const Font FONT_REFS_[MAX_NUM_FONTS];
-
+  Font FONT_REFS_[MAX_NUM_FONTS];
   Font &currentFontRef_;
   LedColor_t currentColor_;
 
