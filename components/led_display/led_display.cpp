@@ -206,7 +206,7 @@ void LedDisplayComponent::clear() {
 };
 
 uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
-  uint8_t xPos = 0;
+  int xPos = 0;
   size_t strIndx = 0;
   std::string strBuf;
 
@@ -235,7 +235,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
       }
       if (!strBuf.empty()) {
         this->print(xPos, 0, this->currentFontRef_, this->currentColor_, strBuf.c_str());
-        xPos += this->currentFontRef->get_string_width(strBuf.c_str());
+        xPos += this->currentFontRef_->get_string_width(strBuf.c_str());
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
       }
@@ -245,10 +245,10 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
     }
 
     // add char to string buffer
-    buffer += str[strIndx++];
+    strBuf += str[strIndx++];
   }
   this->print(xPos, 0, this->currentFontRef_, this->currentColor_, strBuf.c_str());
-  xPos += this->currentFontRef->get_string_width(strBuf.c_str());
+  xPos += this->currentFontRef_->get_string_width(strBuf.c_str());
   ESP_LOGD(TAG, "final printLED: %s (%u)", strBuf.c_str(), xPos);
   return xPos;
 };
