@@ -38,16 +38,10 @@ void LedDisplayComponent::setup() {
   this->stepsLeft_ = 0;
   this->lastLoop_ = App.get_loop_component_start_time();
 
-  // N.B. all of these fonts must already be installed and declared in the yaml config
-  FONT_REFS_[0] = id(MT_Pixel_5x7);
-  FONT_REFS_[1] = id(MatrixLight6);
-  FONT_REFS_[2] = id(MatrixLight6X);
-
-  this-> = (sizeof(FONT_NAMES) / sizeof(FONT_NAMES[0]));
-
-
   this->currentColor_ = COLORS[1];  // defaults to Red
-  this->currentFontRef_ = this->FONT_REFS_[0];  // defaults to 5x7
+  this->currentFontRef_ = this->fontRefs_[0];  // defaults to MT_PIXEL_5x7
+
+  assert(this->numFonts_ > 0);
 
   this->display_();
 
@@ -226,7 +220,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         continue;
       }
       auto fontNum = (str[strIndx++] - '0');
-      if ((fontNum < 0) || (fontNum >= MAX_NUM_FONTS)) {
+      if ((fontNum < 0) || (fontNum >= this->numFonts_)) {
         ESP_LOGW(TAG, "Invalid font number: %d", str[strIndx - 1]);
         continue;
       }
@@ -245,7 +239,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
       }
-      this->currentFontRef_ = this->FONT_REFS_[fontNum];
+      this->currentFontRef_ = this->fontRefs_[fontNum];
       this->currentColor_ = COLORS[colorNum];
       continue;
     }

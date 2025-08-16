@@ -68,8 +68,6 @@ static const LedColor_t COLORS[] = {
   AMBER_LED_COLOR
 };
 
-static const uint8_t MAX_NUM_FONTS = 4;
-
 
 class LedDisplayComponent;
 
@@ -77,6 +75,11 @@ using LedDisplayWriter_t = std::function<void(LedDisplayComponent &)>;
 
 class LedDisplayComponent: public display::DisplayBuffer {
 public:
+  void set_fonts(const std::vector<esphome::font::Font*> & fonts) {
+    this->fontRefs_ = fonts;
+    this->numFonts_ = fonts.size();
+  }
+
   void set_writer(LedDisplayWriter_t &&writer) { this->writerLocal_ = writer; }
  
   void setup() override;
@@ -160,7 +163,9 @@ protected:
   uint16_t scrollSpeed_;
   ScrollMode scrollMode_;
 
-  Font FONT_REFS_[MAX_NUM_FONTS];
+  std::vector<esphome::font::Font*> fontRefs_;
+  uint8_t numFonts_ = 0;
+
   Font &currentFontRef_;
   LedColor_t currentColor_;
 
