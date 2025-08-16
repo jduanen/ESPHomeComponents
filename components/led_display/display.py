@@ -3,7 +3,6 @@ import esphome.codegen as cg
 from esphome.components import display
 import esphome.config_validation as cv
 from esphome.const import (
-    CONF_FONTS,
     CONF_ID,
     CONF_INTENSITY,
     CONF_LAMBDA,
@@ -22,6 +21,7 @@ CONF_SCROLL_DELAY = "scroll_delay"
 CONF_SCROLL_DWELL = "scroll_dwell"
 
 CONF_FLIP_X = "flip_x"
+CONF_FONTS = "fonts"
 
 
 integration_ns = cg.esphome_ns.namespace("led_display")
