@@ -39,7 +39,7 @@ void LedDisplayComponent::setup() {
   this->lastLoop_ = App.get_loop_component_start_time();
 
   // N.B. all of these fonts must already be installed and declared in the yaml config
-  FONT_REFS_[0] = id(5x7_MT_Pixel);
+  FONT_REFS_[0] = id(MT_Pixel_5x7);
   FONT_REFS_[1] = id(MatrixLight6);
   FONT_REFS_[2] = id(MatrixLight6X);
 
