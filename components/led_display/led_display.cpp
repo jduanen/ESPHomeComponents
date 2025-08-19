@@ -125,6 +125,14 @@ Color LedColorToColor(LedColor_t ledColor) {
   return color;
 };
 
+uint32_t getStringWidth_(Font *font, char *str) {
+  int width = 0, xOffset = 0, baseline = 0, height = 0;
+  font->measure(str, &width, &xOffset, &baseline, &height);
+  ESP_LOGD(TAG, "String: '%s', width=%d, xOffset=%d, baseline=%d, height=%d",
+           str, width, xOffset, baseline, height);
+  return width;
+};
+
 void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color) {
   // write pixel into framebuffer
   // N.B. Color is an RGB565 value stored in a 32b struct defined in esphome/core/color.h
@@ -255,7 +263,8 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         this->print(xPos, 0, this->currentFont_, LedColorToColor(this->background_),
                     esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
                     LedColorToColor(this->currentColor_));
-        xPos += this->currentFont_->get_string_width(strBuf.c_str());
+        //xPos += this->currentFont_->get_string_width(strBuf.c_str());
+        xPos += this->getStringWidth_(this->currentFont_, strBuf.c_str());
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
       }
@@ -268,7 +277,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
     strBuf += str[strIndx++];
   }
   this->print(xPos, 0, this->currentFont_, this->currentColor_, strBuf.c_str());
-  xPos += this->currentFont_->get_string_width(strBuf.c_str());
+  xPos += this->getStringWidth(this->currentFont_, strBuf.c_str());
   ESP_LOGD(TAG, "final printLED: %s (%u)", strBuf.c_str(), xPos);
   return xPos;
 };

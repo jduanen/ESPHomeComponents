@@ -193,6 +193,8 @@ protected:
   LedColor_t colorToLedColor(Color color);
   Color LedColorToColor(LedColor_t color);
 
+  uint32_t getStringWidth_(Font *font, char *str);
+
   void display_();
 
   void enableRow_(LedColor_t rowColor, uint rowNum);
