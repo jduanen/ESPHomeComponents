@@ -172,7 +172,13 @@ void LedDisplayComponent::loop() {
   // call display if the buffer has changed size since last update
   const size_t bufferWidth = this->frameBuffer_[0].size();
   if ((bufferWidth >= (this->oldBufferWidth_ + 3)) || (bufferWidth <= (this->oldBufferWidth_ - 3))) {
-    ESP_LOGV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
+    if (bufferWidth >= (this->oldBufferWidth_ + 3)) {
+      ESP_LOGVV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
+    }
+    if (bufferWidth <= (this->oldBufferWidth_ - 3)) {
+      ESP_LOGVV(TAG, "New buffer width less than old width (%d <= %d)",
+                this->oldBufferWidth_, bufferWidth);
+    }
     this->stepsLeft_ = 0;
     this->display_();
     this->oldBufferWidth_ = bufferWidth;
@@ -228,7 +234,7 @@ void LedDisplayComponent::clear() {
     this->frameBuffer_[row].resize(this->get_width_internal(), this->background_);
     this->frameBuffer_[row].clear();
   }
-  ESP_LOGD(TAG, "Reset the framebuffer size and clear its rows");  //// TMP TMP TMP
+  ESP_LOGV(TAG, "Reset the framebuffer size and clear its rows");
 };
 
 uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
