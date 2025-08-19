@@ -106,7 +106,7 @@ LedColor_t LedDisplayComponent::colorToLedColor(Color color) {
   return ledColor;
 };
 
-Color LedColorToColor(LedColor_t ledColor) {
+Color LedDisplayComponent::LedColorToColor(LedColor_t ledColor) {
   Color color = Color(0, 0, 0);
 
   switch (ledColor) {
@@ -125,7 +125,7 @@ Color LedColorToColor(LedColor_t ledColor) {
   return color;
 };
 
-uint32_t getStringWidth_(Font *font, const char *str) {
+uint32_t LedDisplayComponent::getStringWidth_(Font *font, const char *str) {
   int width = 0, xOffset = 0, baseline = 0, height = 0;
   font->measure(str, &width, &xOffset, &baseline, &height);
   ESP_LOGD(TAG, "String: '%s', width=%d, xOffset=%d, baseline=%d, height=%d",
