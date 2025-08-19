@@ -106,6 +106,25 @@ LedColor_t LedDisplayComponent::colorToLedColor(Color color) {
   return ledColor;
 };
 
+Color LedColorToColor(LedColor_t ledColor) {
+  Color color = Color(0, 0, 0);
+
+  switch (color) {
+  case (RED_LED_COLOR):
+    color = Color(255, 0, 0);
+    break;
+  case (GREEN_LED_COLOR):
+    color = Color(0, 255, 0);
+    break;
+  case (AMBER_LED_COLOR):
+    color = Color(255, 255, 0);
+    break;
+  default:
+    ESP_LOGE(TAG, "Invalid LED color: %d", ledColor);
+  return color;
+}
+
+
 void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color) {
   // write pixel into framebuffer
   // N.B. Color is an RGB565 value stored in a 32b struct defined in esphome/core/color.h
@@ -234,7 +253,9 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
       }
       if (!strBuf.empty()) {
 //        this->print(xPos, 0, this->currentFont_, this->currentColor_, strBuf.c_str());
-        this->print(xPos, 0, this->currentFont_, this->background_, esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(), this->currentColor_);
+        this->print(xPos, 0, this->currentFont_, LedColorToColor(this->background_),
+                    esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
+                    LedColorToColor(this->currentColor_));
         xPos += this->currentFont_.get_string_width(strBuf.c_str());
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();

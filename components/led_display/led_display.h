@@ -191,6 +191,7 @@ protected:
   };
 
   LedColor_t colorToLedColor(Color color);
+  Color LedColorToColor(LedColor_t color);
 
   void display_();
 
