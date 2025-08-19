@@ -193,7 +193,7 @@ protected:
   LedColor_t colorToLedColor(Color color);
   Color LedColorToColor(LedColor_t color);
 
-  uint32_t getStringWidth_(Font *font, char *str);
+  uint32_t getStringWidth_(Font *font, const char *str);
 
   void display_();
 
