@@ -5,7 +5,7 @@
 #include "esphome/components/font/font.h"
 #include "esphome/components/display/display_buffer.h"
 
-//#include <numeric>  //// TMP TMP TMP
+#include <numeric>
 #include <vector>
 
 /*
