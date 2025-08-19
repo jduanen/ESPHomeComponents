@@ -109,7 +109,7 @@ LedColor_t LedDisplayComponent::colorToLedColor(Color color) {
 Color LedColorToColor(LedColor_t ledColor) {
   Color color = Color(0, 0, 0);
 
-  switch (color) {
+  switch (ledColor) {
   case (RED_LED_COLOR):
     color = Color(255, 0, 0);
     break;
