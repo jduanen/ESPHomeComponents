@@ -18,7 +18,7 @@ namespace esphome {
 namespace led_display {
 
 
-using esphome::font::Font;
+//using esphome::font::Font;
 
 typedef uint8_t LedColor_t;
 
@@ -75,7 +75,7 @@ using LedDisplayWriter_t = std::function<void(LedDisplayComponent &)>;
 
 class LedDisplayComponent: public display::DisplayBuffer {
 public:
-  void set_fonts(const std::vector<esphome::font::Font*> & fonts) {
+  void set_fonts(const std::vector<Font *> fonts) {
     this->fonts_ = fonts;
     this->numFonts_ = fonts.size();
   }
@@ -163,10 +163,10 @@ protected:
   uint16_t scrollSpeed_;
   ScrollMode scrollMode_;
 
-  std::vector<esphome::font::Font*> fonts_;
+  std::vector<Font *> fonts_;
   uint8_t numFonts_ = 0;
 
-  Font &currentFont_;
+  Font *currentFont_;
   LedColor_t currentColor_;
 
   optional<LedDisplayWriter_t> writerLocal_{};
