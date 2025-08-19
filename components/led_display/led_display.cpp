@@ -39,7 +39,7 @@ void LedDisplayComponent::setup() {
   this->lastLoop_ = App.get_loop_component_start_time();
 
   this->currentColor_ = COLORS[1];  // defaults to Red
-  this->currentFontRef_ = this->fontRefs_[0];  // defaults to MT_PIXEL_5x7
+  this->currentFont_ = this->fonts_[0];  // defaults to MT_PIXEL_5x7
 
   assert(this->numFonts_ > 0);
 
@@ -234,12 +234,12 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         continue;
       }
       if (!strBuf.empty()) {
-        this->print(xPos, 0, this->currentFontRef_, this->currentColor_, strBuf.c_str());
-        xPos += this->currentFontRef_->get_string_width(strBuf.c_str());
+        this->print(xPos, 0, this->currentFont_, this->currentColor_, strBuf.c_str());
+        xPos += this->currentFont_.get_string_width(strBuf.c_str());
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
       }
-      this->currentFontRef_ = this->fontRefs_[fontNum];
+      this->currentFont_ = this->fonts_[fontNum];
       this->currentColor_ = COLORS[colorNum];
       continue;
     }
@@ -247,8 +247,8 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
     // add char to string buffer
     strBuf += str[strIndx++];
   }
-  this->print(xPos, 0, this->currentFontRef_, this->currentColor_, strBuf.c_str());
-  xPos += this->currentFontRef_->get_string_width(strBuf.c_str());
+  this->print(xPos, 0, this->currentFont_, this->currentColor_, strBuf.c_str());
+  xPos += this->currentFont_->get_string_width(strBuf.c_str());
   ESP_LOGD(TAG, "final printLED: %s (%u)", strBuf.c_str(), xPos);
   return xPos;
 };

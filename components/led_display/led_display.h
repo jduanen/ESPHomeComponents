@@ -76,7 +76,7 @@ using LedDisplayWriter_t = std::function<void(LedDisplayComponent &)>;
 class LedDisplayComponent: public display::DisplayBuffer {
 public:
   void set_fonts(const std::vector<esphome::font::Font*> & fonts) {
-    this->fontRefs_ = fonts;
+    this->fonts_ = fonts;
     this->numFonts_ = fonts.size();
   }
 
@@ -163,10 +163,10 @@ protected:
   uint16_t scrollSpeed_;
   ScrollMode scrollMode_;
 
-  std::vector<esphome::font::Font*> fontRefs_;
+  std::vector<esphome::font::Font*> fonts_;
   uint8_t numFonts_ = 0;
 
-  Font &currentFontRef_;
+  Font &currentFont_;
   LedColor_t currentColor_;
 
   optional<LedDisplayWriter_t> writerLocal_{};
