@@ -119,6 +119,9 @@ Color LedDisplayComponent::LedColorToColor(LedColor_t ledColor) {
   case (AMBER_LED_COLOR):
     color = Color(255, 255, 0);
     break;
+  case (BLACK_LED_COLOR):
+    color = Color(0, 0, 0);
+    break;
   default:
     ESP_LOGE(TAG, "Invalid LED color: %d", ledColor);
   }
