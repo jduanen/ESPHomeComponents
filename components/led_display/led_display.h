@@ -18,7 +18,7 @@ namespace esphome {
 namespace led_display {
 
 
-//using esphome::font::Font;
+using esphome::font::Font;
 
 typedef uint8_t LedColor_t;
 
