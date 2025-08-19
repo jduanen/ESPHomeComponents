@@ -4,7 +4,6 @@
 namespace esphome {
 namespace led_display {
 
-
 void LedDisplayComponent::setup() {
   pinMode(ROW_BIT_0, OUTPUT);
   pinMode(ROW_BIT_1, OUTPUT);
@@ -235,7 +234,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
       }
       if (!strBuf.empty()) {
 //        this->print(xPos, 0, this->currentFont_, this->currentColor_, strBuf.c_str());
-        this->print(xPos, 0, this->currentFont_, this->background_, TextAlign::TOP_LEFT, strBuf.c_str(), this->currentColor_);
+        this->print(xPos, 0, this->currentFont_, this->background_, esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(), this->currentColor_);
         xPos += this->currentFont_.get_string_width(strBuf.c_str());
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
