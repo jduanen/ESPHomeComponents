@@ -121,9 +121,9 @@ Color LedColorToColor(LedColor_t ledColor) {
     break;
   default:
     ESP_LOGE(TAG, "Invalid LED color: %d", ledColor);
+  }
   return color;
-}
-
+};
 
 void LedDisplayComponent::draw_absolute_pixel_internal(int x, int y, Color color) {
   // write pixel into framebuffer
