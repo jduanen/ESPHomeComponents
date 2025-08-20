@@ -245,6 +245,9 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
   size_t strIndx = 0;
   std::string strBuf;
 
+  Font *startFont = this->currentFont_;
+  LedColor_t startColor = this->currentColor_;
+
   this->clear();
 
   // look for escape sequences of the form: "\033[<fontNum>;<colorNum>m"
@@ -294,6 +297,9 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
               LedColorToColor(this->background_));
   xPos += this->getStringWidth_(this->currentFont_, strBuf.c_str());
   ESP_LOGD(TAG, "final printLED: %s (%u)", strBuf.c_str(), xPos);
+
+  this->currentFont_ = startFont;
+  this->currentColor_ = startColor;
   return xPos;
 };
 
