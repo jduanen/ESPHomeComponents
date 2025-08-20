@@ -37,8 +37,8 @@ void LedDisplayComponent::setup() {
   this->stepsLeft_ = 0;
   this->lastLoop_ = App.get_loop_component_start_time();
 
-  this->currentColor_ = COLORS[1];  // defaults to Red
-  this->currentFont_ = this->fonts_[0];  // defaults to MT_PIXEL_5x7
+  this->currentColor_ = COLORS[1];       // defaults to Red
+  this->currentFont_ = this->fonts_[0];  // defaults to first font (MT_PIXEL_5x7)
 
   assert(this->numFonts_ > 0);
 
