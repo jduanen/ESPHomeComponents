@@ -251,21 +251,25 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
   while (str[strIndx] != '\0') {
     if (str[strIndx] == '\\') {
       if (str[strIndx++] != '[') {
-        ESP_LOGW(TAG, "Invalid escape sequence, missing '['");
+        ESP_LOGW(TAG, "Invalid escape sequence, missing '[': (%c)", str[strIndx - 1]);
         continue;
       }
       auto fontNum = (str[strIndx++] - '0');
       if ((fontNum < 0) || (fontNum >= this->numFonts_)) {
-        ESP_LOGW(TAG, "Invalid font number: %d", str[strIndx - 1]);
+        ESP_LOGW(TAG, "Invalid font number: (%c)", str[strIndx - 1]);
         continue;
       }
       if (str[strIndx++] != ';') {
-        ESP_LOGW(TAG, "Invalid escape sequence, missing ';'");
+        ESP_LOGW(TAG, "Invalid escape sequence, missing ';': (%c)", str[strIndx - 1]);
         continue;
       }
       auto colorNum = (str[strIndx++] - '0');
       if ((colorNum < 0) || (colorNum >= MAX_NUM_COLORS)) {
-        ESP_LOGW(TAG, "Invalid color number: %c", str[strIndx - 1]);
+        ESP_LOGW(TAG, "Invalid color number: (%c)", str[strIndx - 1]);
+        continue;
+      }
+      if (str[strIndx++] != 'm') {
+        ESP_LOGW(TAG, "Invalid escape sequence, missing 'm': (%c)", str[strIndx - 1]);
         continue;
       }
       if (!strBuf.empty()) {
