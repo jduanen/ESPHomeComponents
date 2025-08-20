@@ -249,7 +249,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
 
   // look for escape sequences of the form: "\033[<fontNum>;<colorNum>m"
   while (str[strIndx] != '\0') {
-    if (str[strIndx] == '\\') {
+    if (str[strIndx++] == '\\') {
       if (str[strIndx++] != '[') {
         ESP_LOGW(TAG, "Invalid escape sequence, missing '[': (%c)", str[strIndx - 1]);
         continue;
