@@ -285,7 +285,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
     strBuf += str[strIndx++];
   }
   this->print(xPos, 0, this->currentFont_, LedColorToColor(this->background_),
-              esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
+              esphome::display::TextAlign::BOTTOM_LEFT, strBuf.c_str(),
               LedColorToColor(this->currentColor_));
   xPos += this->getStringWidth_(this->currentFont_, strBuf.c_str());
   ESP_LOGD(TAG, "final printLED: %s (%u)", strBuf.c_str(), xPos);
