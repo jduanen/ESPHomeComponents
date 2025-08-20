@@ -273,6 +273,8 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         ESP_LOGW(TAG, "Invalid escape sequence, missing 'm': (%c)", str[strIndx - 1]);
         continue;
       }
+      this->currentFont_ = this->fonts_[fontNum];
+      this->currentColor_ = COLORS[colorNum];
       if (!strBuf.empty()) {
         this->print(xPos, 0, this->currentFont_, LedColorToColor(this->currentColor_),
                     esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
@@ -281,8 +283,6 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         ESP_LOGD(TAG, "printLED: %s (%u)", strBuf.c_str(), xPos);
         strBuf.clear();
       }
-      this->currentFont_ = this->fonts_[fontNum];
-      this->currentColor_ = COLORS[colorNum];
       continue;
     }
 
