@@ -280,6 +280,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
         this->print(xPos, 0, this->currentFont_, LedColorToColor(this->currentColor_),
                     esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
                     LedColorToColor(this->background_));
+        ESP_LOGD(TAG, "> xPos=%u", xPos);  //// TMP TMP TMP
         xPos += this->getStringWidth_(this->currentFont_, strBuf.c_str());
         ESP_LOGD(TAG, "printLED: font=%u, color=%u, xPos=%u, str=%s)", 
                  this->currentFont_, this->currentColor_, xPos, strBuf.c_str());
@@ -297,6 +298,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
     this->print(xPos, 0, this->currentFont_, LedColorToColor(this->currentColor_),
                 esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
                 LedColorToColor(this->background_));
+    ESP_LOGD(TAG, ">> xPos=%u", xPos);  //// TMP TMP TMP
     xPos += this->getStringWidth_(this->currentFont_, strBuf.c_str());
     ESP_LOGD(TAG, "final printLED: font=%u, color=%u, xPos=%u, str=%s)", 
              this->currentFont_, this->currentColor_, xPos, strBuf.c_str());
