@@ -305,7 +305,7 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
   this->currentFont_ = startFont;
   this->currentColor_ = startColor;
   ESP_LOGD(TAG, "exit printLED: currentFont=%u, currentColor=%u",
-           this->currentFont, this->currentColor);
+           this->currentFont_, this->currentColor_);
   return xPos;
 };
 
