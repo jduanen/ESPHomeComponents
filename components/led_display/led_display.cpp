@@ -1,3 +1,8 @@
+#include "esp_log.h"
+#include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 #include "led_display.h"
 #include "esphome/core/application.h"
 
@@ -10,19 +15,19 @@ void LedDisplayComponent::setup() {
   pinMode(ROW_BIT_2, OUTPUT);
 
   pinMode(GREEN_LEDS_ENB, OUTPUT);
-  digitalWrite(GREEN_LEDS_ENB, HIGH);
+  digitalWrite(GREEN_LEDS_ENB, 1);
 
   pinMode(RED_LEDS_ENB, OUTPUT);
-  digitalWrite(RED_LEDS_ENB, HIGH);
+  digitalWrite(RED_LEDS_ENB, 1);
 
   pinMode(COL_DATA, OUTPUT);
-  digitalWrite(COL_DATA, LOW);
+  digitalWrite(COL_DATA, 0);
 
   pinMode(COL_STROBE, OUTPUT);
-  digitalWrite(COL_STROBE, LOW);
+  digitalWrite(COL_STROBE, 0);
 
   pinMode(COL_CLOCK, OUTPUT);
-  digitalWrite(COL_CLOCK, LOW);
+  digitalWrite(COL_CLOCK, 0);
 
   this->disableRows_();
 
@@ -365,12 +370,12 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
 
   switch (rowColor) {
   case (GREEN_LED_COLOR):
-    digitalWrite(GREEN_LEDS_ENB, LOW);
-    digitalWrite(RED_LEDS_ENB, HIGH);
+    digitalWrite(GREEN_LEDS_ENB, 0);
+    digitalWrite(RED_LEDS_ENB, 1);
     break;
   case (RED_LED_COLOR):
-    digitalWrite(GREEN_LEDS_ENB, HIGH);
-    digitalWrite(RED_LEDS_ENB, LOW);
+    digitalWrite(GREEN_LEDS_ENB, 1);
+    digitalWrite(RED_LEDS_ENB, 0);
     break;
   default:
     ESP_LOGE(TAG, "Invalid row color: %u", rowColor);
@@ -378,11 +383,11 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
 };
 
 void LedDisplayComponent::disableRows_() {
-    digitalWrite(GREEN_LEDS_ENB, HIGH);
-    digitalWrite(RED_LEDS_ENB, HIGH);
-    digitalWrite(ROW_BIT_0, HIGH);
-    digitalWrite(ROW_BIT_1, HIGH);
-    digitalWrite(ROW_BIT_2, HIGH);
+    digitalWrite(GREEN_LEDS_ENB, 1);
+    digitalWrite(RED_LEDS_ENB, 1);
+    digitalWrite(ROW_BIT_0, 1);
+    digitalWrite(ROW_BIT_1, 1);
+    digitalWrite(ROW_BIT_2, 1);
 };
 
 void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
@@ -392,14 +397,14 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   uint8_t lo = (this->invert_ ? 1 : 0);
   for (int c = 0; (c < this->get_width_internal()); c++) {
     auto col = this->flipX_ ? c : ((this->get_width_internal() - 1) - c);
-    digitalWrite(COL_CLOCK, LOW);
+    digitalWrite(COL_CLOCK, 0);
     digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
-    digitalWrite(COL_CLOCK, HIGH);
+    digitalWrite(COL_CLOCK, 1);
   }
 
   // strobe to latch data -- desired color of LEDs in the row are now set
-  digitalWrite(COL_STROBE, HIGH);
-  digitalWrite(COL_STROBE, LOW);
+  digitalWrite(COL_STROBE, 1);
+  digitalWrite(COL_STROBE, 0);
 };
 
 }  // namespace led_display
