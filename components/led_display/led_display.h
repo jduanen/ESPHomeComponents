@@ -1,7 +1,7 @@
 #pragma once
 
 #include "esp_log.h"
-#include "driver/GPIO_NUM_.h"
+#include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
