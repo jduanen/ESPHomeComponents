@@ -359,18 +359,18 @@ void LedDisplayComponent::display_() {
 
 void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
   assert(rowNum < this->get_height_internal());
-  digitalWrite(ROW_BIT_0, (rowNum & 0x01));
-  digitalWrite(ROW_BIT_1, (rowNum & 0x02));
-  digitalWrite(ROW_BIT_2, (rowNum & 0x04));
+  gpio_set_level(ROW_BIT_0, (rowNum & 0x01));
+  gpio_set_level(ROW_BIT_1, (rowNum & 0x02));
+  gpio_set_level(ROW_BIT_2, (rowNum & 0x04));
 
   switch (rowColor) {
   case (GREEN_LED_COLOR):
-    digitalWrite(GREEN_LEDS_ENB, 0);
-    digitalWrite(RED_LEDS_ENB, 1);
+    gpio_set_level(GREEN_LEDS_ENB, 0);
+    gpio_set_level(RED_LEDS_ENB, 1);
     break;
   case (RED_LED_COLOR):
-    digitalWrite(GREEN_LEDS_ENB, 1);
-    digitalWrite(RED_LEDS_ENB, 0);
+    gpio_set_level(GREEN_LEDS_ENB, 1);
+    gpio_set_level(RED_LEDS_ENB, 0);
     break;
   default:
     ESP_LOGE(TAG, "Invalid row color: %u", rowColor);
@@ -378,11 +378,11 @@ void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
 };
 
 void LedDisplayComponent::disableRows_() {
-    digitalWrite(GREEN_LEDS_ENB, 1);
-    digitalWrite(RED_LEDS_ENB, 1);
-    digitalWrite(ROW_BIT_0, 1);
-    digitalWrite(ROW_BIT_1, 1);
-    digitalWrite(ROW_BIT_2, 1);
+    gpio_set_level(GREEN_LEDS_ENB, 1);
+    gpio_set_level(RED_LEDS_ENB, 1);
+    gpio_set_level(ROW_BIT_0, 1);
+    gpio_set_level(ROW_BIT_1, 1);
+    gpio_set_level(ROW_BIT_2, 1);
 };
 
 void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
@@ -392,14 +392,14 @@ void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
   uint8_t lo = (this->invert_ ? 1 : 0);
   for (int c = 0; (c < this->get_width_internal()); c++) {
     auto col = this->flipX_ ? c : ((this->get_width_internal() - 1) - c);
-    digitalWrite(COL_CLOCK, 0);
-    digitalWrite(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
-    digitalWrite(COL_CLOCK, 1);
+    gpio_set_level(COL_CLOCK, 0);
+    gpio_set_level(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
+    gpio_set_level(COL_CLOCK, 1);
   }
 
   // strobe to latch data -- desired color of LEDs in the row are now set
-  digitalWrite(COL_STROBE, 1);
-  digitalWrite(COL_STROBE, 0);
+  gpio_set_level(COL_STROBE, 1);
+  gpio_set_level(COL_STROBE, 0);
 };
 
 }  // namespace led_display

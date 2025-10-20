@@ -10,6 +10,7 @@
 #include "esphome/components/font/font.h"
 #include "esphome/components/display/display_buffer.h"
 
+#include <map>
 #include <numeric>
 #include <vector>
 
