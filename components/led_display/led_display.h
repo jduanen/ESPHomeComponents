@@ -8,7 +8,7 @@
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
 #include "esphome/components/font/font.h"
-#include "esphome/components/display/display_buffer"
+#include "esphome/components/display/display_buffer.h"
 
 #include <numeric>
 #include <vector>
