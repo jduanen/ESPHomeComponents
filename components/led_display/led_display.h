@@ -8,9 +8,10 @@
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
 #include "esphome/components/font/font.h"
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display_buffer.
 
-#include <map>
+#include "Arduino.h"
+
 #include <numeric>
 #include <vector>
 
@@ -106,7 +107,7 @@ public:
 
   void set_intensity(uint8_t intensity) {
     this->intensity_ = intensity;
-    this->brightness_ = std::map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
+    this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Set Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   };
 
@@ -131,7 +132,7 @@ public:
 
   void intensity(uint8_t intensity) {
     this->intensity_ = intensity;
-    this->brightness_ = std::map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
+    this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   };
 
