@@ -1,8 +1,3 @@
-#include "esp_log.h"
-#include "driver/gpio.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
 #include "led_display.h"
 #include "esphome/core/application.h"
 
@@ -10,24 +5,24 @@ namespace esphome {
 namespace led_display {
 
 void LedDisplayComponent::setup() {
-  pinMode(ROW_BIT_0, OUTPUT);
-  pinMode(ROW_BIT_1, OUTPUT);
-  pinMode(ROW_BIT_2, OUTPUT);
+  gpio_set_direction(ROW_BIT_0, GPIO_MODE_OUTPUT);
+  gpio_set_direction(ROW_BIT_1, GPIO_MODE_OUTPUT);
+  gpio_set_direction(ROW_BIT_2, GPIO_MODE_OUTPUT);
 
-  pinMode(GREEN_LEDS_ENB, OUTPUT);
-  digitalWrite(GREEN_LEDS_ENB, 1);
+  gpio_set_direction(GREEN_LEDS_ENB, GPIO_MODE_OUTPUT);
+  gpio_set_level(GREEN_LEDS_ENB, 1);
 
-  pinMode(RED_LEDS_ENB, OUTPUT);
-  digitalWrite(RED_LEDS_ENB, 1);
+  gpio_set_direction(RED_LEDS_ENB, GPIO_MODE_OUTPUT);
+  gpio_set_level(RED_LEDS_ENB, 1);
 
-  pinMode(COL_DATA, OUTPUT);
-  digitalWrite(COL_DATA, 0);
+  gpio_set_direction(COL_DATA, GPIO_MODE_OUTPUT);
+  gpio_set_level(COL_DATA, 0);
 
-  pinMode(COL_STROBE, OUTPUT);
-  digitalWrite(COL_STROBE, 0);
+  gpio_set_direction(COL_STROBE, GPIO_MODE_OUTPUT);
+  gpio_set_level(COL_STROBE, 0);
 
-  pinMode(COL_CLOCK, OUTPUT);
-  digitalWrite(COL_CLOCK, 0);
+  gpio_set_direction(COL_CLOCK, GPIO_MODE_OUTPUT);
+  gpio_set_level(COL_CLOCK, 0);
 
   this->disableRows_();
 
