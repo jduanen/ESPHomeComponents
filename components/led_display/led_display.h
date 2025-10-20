@@ -8,9 +8,7 @@
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
 #include "esphome/components/font/font.h"
-#include "esphome/components/display/display_buffer.
-
-#include "Arduino.h"
+#include "esphome/components/display/display_buffer"
 
 #include <numeric>
 #include <vector>
@@ -107,7 +105,7 @@ public:
 
   void set_intensity(uint8_t intensity) {
     this->intensity_ = intensity;
-    this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
+    this->brightness_ = map_(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Set Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   };
 
@@ -132,7 +130,7 @@ public:
 
   void intensity(uint8_t intensity) {
     this->intensity_ = intensity;
-    this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
+    this->brightness_ = map_(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   };
 
@@ -207,6 +205,10 @@ protected:
   void enableRow_(LedColor_t rowColor, uint rowNum);
   void disableRows_();
   void shiftInPixels_(LedColor_t rowColor, uint rowNum);
+
+  long map_(long x, long inMin, long inMax, long outMin, long outMax) {
+    return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+  };
 };
 
 }  // namespace led_display
