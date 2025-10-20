@@ -38,16 +38,16 @@ enum ScrollMode {
 
 static const char *const TAG = "LedDisplay";
 
-static const uint8_t ROW_BIT_0  = GPIO_NUM_2;  // D0
-static const uint8_t ROW_BIT_1  = GPIO_NUM_3;  // D1
-static const uint8_t ROW_BIT_2  = GPIO_NUM_4;  // D2
+static const gpio_num_t ROW_BIT_0  = GPIO_NUM_2;  // D0
+static const gpio_num_t ROW_BIT_1  = GPIO_NUM_3;  // D1
+static const gpio_num_t ROW_BIT_2  = GPIO_NUM_4;  // D2
 
-static const uint8_t RED_LEDS_ENB   = GPIO_NUM_5;  // D3
-static const uint8_t GREEN_LEDS_ENB = GPIO_NUM_6;  // D4
+static const gpio_num_t RED_LEDS_ENB   = GPIO_NUM_5;  // D3
+static const gpio_num_t GREEN_LEDS_ENB = GPIO_NUM_6;  // D4
 
-static const uint8_t COL_CLOCK  = GPIO_NUM_7;  // D5
-static const uint8_t COL_DATA   = GPIO_NUM_8;  // D8
-static const uint8_t COL_STROBE = GPIO_NUM_9;  // D9
+static const gpio_num_t COL_CLOCK  = GPIO_NUM_7;  // D5
+static const gpio_num_t COL_DATA   = GPIO_NUM_8;  // D8
+static const gpio_num_t COL_STROBE = GPIO_NUM_9;  // D9
 
 static const LedColor_t BLACK_LED_COLOR = 0b00000000;
 static const LedColor_t RED_LED_COLOR   = 0b00000001;
