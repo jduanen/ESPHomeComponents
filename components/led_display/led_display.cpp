@@ -316,6 +316,9 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
 void LedDisplayComponent::scrollLeft_() {
   // define a lambda to rotate a line left by the given number of steps
   auto scroll = [&](std::vector<uint8_t> &line, uint16_t steps) {
+    if (line.empty()) return;  // guard against empty buffer
+    steps %= line.size();      // clamp to buffer size
+    if (steps == 0) return;    // no-op if nothing to rotate
     std::rotate(line.begin(), std::next(line.begin(), steps), line.end());
   };
 
@@ -324,12 +327,11 @@ void LedDisplayComponent::scrollLeft_() {
     uint32_t sum = std::accumulate(this->frameBuffer_[row].begin(), this->frameBuffer_[row].end(), 0u);  //// TMP TMP TMP
     ESP_LOGVV(TAG, "scrollLeft Pre: %u, sum(row: %u) = %u", this->update_, row, sum);  //// TMP TMP TMP
     if (this->update_) {
-      // update required, so append a black pixel to the end of the row to ensure the row's long enough
-      this->frameBuffer_[row].push_back(this->background_);
-      // circular rotate the row by one more than the number of steps left
-      // because an update requires ????
-      scroll(this->frameBuffer_[row],
-             (this->stepsLeft_ + 1) % (this->frameBuffer_[row].size()));
+      // update required
+      // Buffer was re-rendered from column 0 by update()
+      // Rotate to catch up to current position + 1 new step
+      // No push_back — buffer size must stay constant
+      scroll(this->frameBuffer_[row], this->stepsLeft_ + 1);
     } else {
       // no update required, so just rotate the current row by one
       scroll(this->frameBuffer_[row], 1);
