@@ -166,66 +166,89 @@ void LedDisplayComponent::update() {
 };
 
 void LedDisplayComponent::loop() {
-  const uint32_t now = App.get_loop_component_start_time();
-  const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
-  //ESP_LOGVV(TAG, "Refresh rate: %.1f fps (%u msec)", (1000.0 / msecSinceLastLoop), msecSinceLastLoop);
-  this->lastLoop_ = now;
-  const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
+    const uint32_t now = App.get_loop_component_start_time();
+    const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
+    this->lastLoop_ = now;
 
-  // call display if the buffer has changed size since last update
-  const size_t bufferWidth = this->frameBuffer_[0].size();
-  if ((bufferWidth >= (this->oldBufferWidth_ + 3)) || (bufferWidth <= (this->oldBufferWidth_ - 3))) {
-    if (bufferWidth >= (this->oldBufferWidth_ + 3)) {
-      ESP_LOGVV(TAG, "Buffer size changed %d to %d", this->oldBufferWidth_, bufferWidth);
+    const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
+
+    // call display if the buffer has changed size since last update
+    const size_t bufferWidth = this->frameBuffer_[0].size();
+    if ((bufferWidth >= (this->oldBufferWidth_ + 3)) ||
+        (bufferWidth <= (this->oldBufferWidth_ - 3))) {
+        if (bufferWidth >= (this->oldBufferWidth_ + 3)) {
+            ESP_LOGVV(TAG, "Buffer size changed %d to %d",
+                      this->oldBufferWidth_, bufferWidth);
+        }
+        if (bufferWidth <= (this->oldBufferWidth_ - 3)) {
+            ESP_LOGVV(TAG, "New buffer width less than old width (%d < %d)",
+                      this->oldBufferWidth_, bufferWidth);
+        }
+        this->stepsLeft_ = 0;
+        this->display_();
+        this->oldBufferWidth_ = bufferWidth;
     }
-    if (bufferWidth <= (this->oldBufferWidth_ - 3)) {
-      ESP_LOGVV(TAG, "New buffer width less than old width (%d <= %d)",
-                this->oldBufferWidth_, bufferWidth);
-    }
-    this->stepsLeft_ = 0;
-    this->display_();
-    this->oldBufferWidth_ = bufferWidth;
-  }
 
-  // check if scroll isn't needed (turned off, or framebuffer is smaller than the display width)
-  if (!this->scrollingOn_ || (bufferWidth <= this->get_width_internal())) {
-    ESP_LOGVV(TAG, "No need to scroll or scroll is off");
-    this->display_();
-    return;
-  }
-
-  // check if scrolling is to be started and enough delay time has elapsed
-  if ((this->stepsLeft_ == 0) && (msecSinceLastScroll < this->scrollDelay_)) {
-    ESP_LOGVV(TAG, "At first step. Waiting for scroll delay (%u < %u)",
-              msecSinceLastScroll, this->scrollDelay_);
-    this->display_();
-    return;
-  }
-
-  if (this->scrollMode_ == ScrollMode::STOP) {
-    // scroll in stop mode, check if this is at the end of the line
-    if ((this->stepsLeft_ + this->get_width_internal()) == (bufferWidth + 1)) {
-      // end of the line, see if we're done with dwell time
-      if (msecSinceLastScroll < this->scrollDwell_) {
-        ESP_LOGVV(TAG, "Dwell time at end of string in case of stop at end. Step %d, since last scroll %d, dwell %d.",
-                  this->stepsLeft_, msecSinceLastScroll, this->scrollDwell_);
+    // check if scroll isn't needed (turned off, or buffer fits in display)
+    if (!this->scrollingOn_ || (bufferWidth <= this->get_width_internal())) {
+        ESP_LOGVV(TAG, "No need to scroll or scroll is off");
+        this->display_();
         return;
-      }
-      ESP_LOGVV(TAG, "Dwell time passed. Continue scrolling.");
     }
-  }
 
-  // if got here, then still scrolling, check if ready to take the next step
-  if (msecSinceLastScroll >= this->scrollSpeed_) {
-    ESP_LOGVV(TAG, "Call to scroll left action; time since last scroll: %u msec, stepsLeft: %u",
-              msecSinceLastScroll, this->stepsLeft_);
-    this->lastScroll_ = now;
-    this->scrollLeft_();
-    this->display_();
-  } else {
-    ESP_LOGVV(TAG, "Not ready to do the next scroll step; %u", msecSinceLastScroll);
-    this->display_();
-  }
+    // check if scrolling is to be started and enough delay time has elapsed
+    if ((this->stepsLeft_ == 0) &&
+        (msecSinceLastScroll < this->scrollDelay_)) {
+        ESP_LOGVV(TAG, "At first step. Waiting for scroll delay (%u < %u)",
+                  msecSinceLastScroll, this->scrollDelay_);
+        this->display_();
+        return;
+    }
+
+    if (this->scrollMode_ == ScrollMode::STOP) {
+        // STOP mode: check if we've reached the end of the text
+        if ((this->stepsLeft_ + this->get_width_internal()) >= bufferWidth) {
+            // End of line reached — check if dwell time has elapsed
+            if (msecSinceLastScroll < this->scrollDwell_) {
+                ESP_LOGVV(TAG, "Dwelling at end of string. step=%d, since=%d, dwell=%d",
+                          this->stepsLeft_, msecSinceLastScroll, this->scrollDwell_);
+                this->display_();  // keep refreshing LEDs during dwell
+                return;
+            }
+
+            // Dwell complete — snap back to start instead of wrapping
+            ESP_LOGD(TAG, "Dwell passed. Resetting to start of text.");
+
+            // Un-rotate the buffer back to its original orientation.
+            // After stepsLeft_ left-rotations, rotating left by
+            // (size - stepsLeft_) restores the original order.
+            for (int row = 0; row < this->get_height_internal(); row++) {
+                auto &line = this->frameBuffer_[row];
+                if (line.empty()) continue;
+                uint16_t undo = line.size() - (this->stepsLeft_ % line.size());
+                undo %= line.size();
+                if (undo > 0) {
+                    std::rotate(line.begin(), line.begin() + undo, line.end());
+                }
+            }
+            this->stepsLeft_ = 0;
+            this->lastScroll_ = now;  // restart the delay timer
+            this->display_();
+            return;
+        }
+    }
+
+    // Still scrolling — check if it's time for the next step
+    if (msecSinceLastScroll >= this->scrollSpeed_) {
+        ESP_LOGVV(TAG, "Scroll left; since_last: %u ms, stepsLeft: %u",
+                  msecSinceLastScroll, this->stepsLeft_);
+        this->lastScroll_ = now;
+        this->scrollLeft_();
+        this->display_();
+    } else {
+        ESP_LOGVV(TAG, "Not ready for next scroll step; %u", msecSinceLastScroll);
+        this->display_();
+    }
 };
 
 void LedDisplayComponent::clear() {
