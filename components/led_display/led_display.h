@@ -38,16 +38,16 @@ enum ScrollMode {
 
 static const char *const TAG = "LedDisplay";
 
-static const uint8_t ROW_BIT_0  = GPIO_NUM_2;  // D0
-static const uint8_t ROW_BIT_1  = GPIO_NUM_3;  // D1
-static const uint8_t ROW_BIT_2  = GPIO_NUM_4;  // D2
+static const gpio_num_t ROW_BIT_0  = GPIO_NUM_2;  // D0
+static const gpio_num_t ROW_BIT_1  = GPIO_NUM_3;  // D1
+static const gpio_num_t ROW_BIT_2  = GPIO_NUM_4;  // D2
 
-static const uint8_t RED_LEDS_ENB   = GPIO_NUM_5;  // D3
-static const uint8_t GREEN_LEDS_ENB = GPIO_NUM_6;  // D4
+static const gpio_num_t RED_LEDS_ENB   = GPIO_NUM_5;  // D3
+static const gpio_num_t GREEN_LEDS_ENB = GPIO_NUM_6;  // D4
 
-static const uint8_t COL_CLOCK  = GPIO_NUM_7;  // D5
-static const uint8_t COL_DATA   = GPIO_NUM_8;  // D8
-static const uint8_t COL_STROBE = GPIO_NUM_9;  // D9
+static const gpio_num_t COL_CLOCK  = GPIO_NUM_7;  // D5
+static const gpio_num_t COL_DATA   = GPIO_NUM_8;  // D8
+static const gpio_num_t COL_STROBE = GPIO_NUM_9;  // D9
 
 static const LedColor_t BLACK_LED_COLOR = 0b00000000;
 static const LedColor_t RED_LED_COLOR   = 0b00000001;
@@ -105,7 +105,7 @@ public:
 
   void set_intensity(uint8_t intensity) {
     this->intensity_ = intensity;
-    this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
+    this->brightness_ = map_(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Set Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   };
 
@@ -130,7 +130,7 @@ public:
 
   void intensity(uint8_t intensity) {
     this->intensity_ = intensity;
-    this->brightness_ = map(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
+    this->brightness_ = map_(intensity, 0, 100, MIN_LEDS_ON_DELAY, MAX_LEDS_ON_DELAY);
     ESP_LOGV(TAG, "Intensity: %u\nBrightness: %u", this->intensity_, this->brightness_);
   };
 
@@ -205,6 +205,10 @@ protected:
   void enableRow_(LedColor_t rowColor, uint rowNum);
   void disableRows_();
   void shiftInPixels_(LedColor_t rowColor, uint rowNum);
+
+  long map_(long x, long inMin, long inMax, long outMin, long outMax) {
+    return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+  };
 };
 
 }  // namespace led_display
