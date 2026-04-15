@@ -11,22 +11,26 @@ namespace led_display {
 
 template<typename... Ts> class DisplayInvertAction : public Action<Ts...>, public Parented<LedDisplayComponent> {
  public:
-  TEMPLATABLE_VALUE(bool, state)
+  void set_state(bool state) { this->state_ = state; }
 
   void play(Ts... x) override {
-    bool state = this->state_.value(x...);
-    this->parent_->invert_on_off(state);
+    this->parent_->invert_on_off(this->state_);
   }
+
+ protected:
+  bool state_{false};
 };
 
 template<typename... Ts> class DisplayVisibilityAction : public Action<Ts...>, public Parented<LedDisplayComponent> {
  public:
-  TEMPLATABLE_VALUE(bool, state)
+  void set_state(bool state) { this->state_ = state; }
 
   void play(Ts... x) override {
-    bool state = this->state_.value(x...);
-    this->parent_->turn_on_off(state);
+    this->parent_->turn_on_off(this->state_);
   }
+
+ protected:
+  bool state_{false};
 };
 
 template<typename... Ts> class DisplayIntensityAction : public Action<Ts...>, public Parented<LedDisplayComponent> {
