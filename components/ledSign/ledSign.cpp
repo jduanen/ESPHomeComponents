@@ -165,7 +165,7 @@ void LEDSignComponent::send_to_all_(uint8_t a_register, uint8_t data) {
 }
 void LEDSignComponent::update() {
   if (this->intensity_changed_) {
-    this->send_to_all_(MAX7219_REGISTER_INTENSITY, this->intensity_);
+    this->send_to_all_(LED_SIGN_REGISTER_INTENSITY, this->intensity_);
     this->intensity_changed_ = false;
   }
   for (uint8_t i = 0; i < this->num_chips_ * 8; i++)
