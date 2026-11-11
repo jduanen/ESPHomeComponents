@@ -24,27 +24,42 @@ void LedDisplayComponent::setup() {
   gpio_set_direction(COL_CLOCK, GPIO_MODE_OUTPUT);
   gpio_set_level(COL_CLOCK, 0);
 
-  this->disableRows_();
+  // all rows off (row select 7 is unused, both color enables are active-low)
+  REG_WRITE(GPIO_OUT_W1TS_REG, (ROW_BITS_MASK | ENABLES_MASK));
 
   // init the framebuffer to the size of the display and all black pixels
   this->frameBuffer_ = FrameBuffer_t(this->get_height_internal(),
                                     FrameBufferColumns_t(this->get_width_internal(),
                                                          LedColor_t{}));
-  this->update_ = false;
-  this->oldBufferWidth_ = 0;
-
-  this->lastScroll_ = 0;
-  this->stepsLeft_ = 0;
-  this->lastLoop_ = App.get_loop_component_start_time();
+  this->scrollOffset_ = 0;
+  this->lastScroll_ = millis();
 
   this->currentColor_ = COLORS[1];       // defaults to Red
   this->currentFont_ = this->fonts_[0];  // defaults to first font (MT_PIXEL_5x7)
 
   assert(this->numFonts_ > 0);
 
-  this->display_();
-
+  this->composeScanBuffer_();
   this->displayOn_ = true;
+
+  // refresh the display from a 1MHz hardware timer, independent of the main loop
+  gptimer_config_t timerConfig = {};
+  timerConfig.clk_src = GPTIMER_CLK_SRC_DEFAULT;
+  timerConfig.direction = GPTIMER_COUNT_UP;
+  timerConfig.resolution_hz = 1000000;
+  gptimer_event_callbacks_t callbacks = {};
+  callbacks.on_alarm = LedDisplayComponent::onTimerAlarm_;
+  gptimer_alarm_config_t alarm = {};
+  alarm.alarm_count = SCAN_PHASE_US;
+  if ((gptimer_new_timer(&timerConfig, &this->timer_) != ESP_OK) ||
+      (gptimer_register_event_callbacks(this->timer_, &callbacks, this) != ESP_OK) ||
+      (gptimer_set_alarm_action(this->timer_, &alarm) != ESP_OK) ||
+      (gptimer_enable(this->timer_) != ESP_OK) ||
+      (gptimer_start(this->timer_) != ESP_OK)) {
+    ESP_LOGE(TAG, "Failed to start refresh timer");
+    this->mark_failed();
+    return;
+  }
 
   ESP_LOGV(TAG, "setup complete");
 };
@@ -55,7 +70,8 @@ void LedDisplayComponent::dump_config() {
                 "  Height: %u\n"
                 "  Width: %u\n"
                 "  Intensity: %u\n"
-                "  Brightness: %u\n"
+                "  Brightness: %u usec/row\n"
+                "  Refresh Rate: %u Hz\n"
                 "  Flip X: %u\n"
                 "  Scrolling On: %u\n"
                 "  Scroll Mode: %u\n"
@@ -65,6 +81,7 @@ void LedDisplayComponent::dump_config() {
                 this->get_height_internal(),
                 this->get_width_internal(),
                 this->intensity_, this->brightness_,
+                (unsigned) (1000000 / (SCAN_PHASE_US * NUM_SCAN_PHASES)),
                 this->flipX_,
                 this->scrollingOn_, this->scrollMode_,
                 this->scrollSpeed_, this->scrollDwell_,
@@ -166,101 +183,47 @@ void LedDisplayComponent::update() {
 };
 
 void LedDisplayComponent::loop() {
-    const uint32_t now = App.get_loop_component_start_time();
-    const uint32_t msecSinceLastLoop = (now - this->lastLoop_);
-    this->lastLoop_ = now;
+  // N.B. LED refresh happens in the timer ISR; this only advances scrolling
+  //      and hands newly composed frames to the ISR.
+  const uint32_t now = App.get_loop_component_start_time();
+  const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
+  const uint16_t bufferWidth = this->frameBuffer_[0].size();
 
-    const uint32_t msecSinceLastScroll = (now - this->lastScroll_);
-
-    // call display if the buffer has changed size since last update
-    const size_t bufferWidth = this->frameBuffer_[0].size();
-    if ((bufferWidth >= (this->oldBufferWidth_ + 3)) ||
-        (bufferWidth <= (this->oldBufferWidth_ - 3))) {
-        if (bufferWidth >= (this->oldBufferWidth_ + 3)) {
-            ESP_LOGVV(TAG, "Buffer size changed %d to %d",
-                      this->oldBufferWidth_, bufferWidth);
-        }
-        if (bufferWidth <= (this->oldBufferWidth_ - 3)) {
-            ESP_LOGVV(TAG, "New buffer width less than old width (%d < %d)",
-                      this->oldBufferWidth_, bufferWidth);
-        }
-        this->stepsLeft_ = 0;
-        this->display_();
-        this->oldBufferWidth_ = bufferWidth;
-    }
-
-    // check if scroll isn't needed (turned off, or buffer fits in display)
-    if (!this->scrollingOn_ || (bufferWidth <= this->get_width_internal())) {
-        ESP_LOGVV(TAG, "No need to scroll or scroll is off");
-        this->display_();
-        return;
-    }
-
-    // check if scrolling is to be started and enough delay time has elapsed
-    if ((this->stepsLeft_ == 0) &&
-        (msecSinceLastScroll < this->scrollDelay_)) {
-        ESP_LOGVV(TAG, "At first step. Waiting for scroll delay (%u < %u)",
-                  msecSinceLastScroll, this->scrollDelay_);
-        this->display_();
-        return;
-    }
-
-    if (this->scrollMode_ == ScrollMode::STOP) {
-        // STOP mode: check if we've reached the end of the text
-        if ((this->stepsLeft_ + this->get_width_internal()) >= bufferWidth) {
-            // End of line reached — check if dwell time has elapsed
-            if (msecSinceLastScroll < this->scrollDwell_) {
-                ESP_LOGVV(TAG, "Dwelling at end of string. step=%d, since=%d, dwell=%d",
-                          this->stepsLeft_, msecSinceLastScroll, this->scrollDwell_);
-                this->display_();  // keep refreshing LEDs during dwell
-                return;
-            }
-
-            // Dwell complete — snap back to start instead of wrapping
-            ESP_LOGD(TAG, "Dwell passed. Resetting to start of text.");
-
-            // Un-rotate the buffer back to its original orientation.
-            // After stepsLeft_ left-rotations, rotating left by
-            // (size - stepsLeft_) restores the original order.
-            for (int row = 0; row < this->get_height_internal(); row++) {
-                auto &line = this->frameBuffer_[row];
-                if (line.empty()) continue;
-                uint16_t undo = line.size() - (this->stepsLeft_ % line.size());
-                undo %= line.size();
-                if (undo > 0) {
-                    std::rotate(line.begin(), line.begin() + undo, line.end());
-                }
-            }
-            this->stepsLeft_ = 0;
-            this->lastScroll_ = now;  // restart the delay timer
-            this->display_();
-            return;
-        }
-    }
-
-    // Still scrolling — check if it's time for the next step
-    if (msecSinceLastScroll >= this->scrollSpeed_) {
-        ESP_LOGVV(TAG, "Scroll left; since_last: %u ms, stepsLeft: %u",
-                  msecSinceLastScroll, this->stepsLeft_);
+  if (this->scrollingOn_ && (bufferWidth > this->get_width_internal())) {
+    if ((this->scrollOffset_ == 0) && (msecSinceLastScroll < this->scrollDelay_)) {
+      // waiting at the start of the text
+    } else if ((this->scrollMode_ == ScrollMode::STOP) &&
+               ((this->scrollOffset_ + this->get_width_internal()) >= bufferWidth)) {
+      // end of text reached -- dwell, then snap back to the start
+      if (msecSinceLastScroll >= this->scrollDwell_) {
+        ESP_LOGV(TAG, "Dwell passed. Resetting to start of text.");
+        this->scrollOffset_ = 0;
         this->lastScroll_ = now;
-        this->scrollLeft_();
-        this->display_();
-    } else {
-        ESP_LOGVV(TAG, "Not ready for next scroll step; %u", msecSinceLastScroll);
-        this->display_();
+        this->dirty_ = true;
+      }
+    } else if (msecSinceLastScroll >= this->scrollSpeed_) {
+      this->scrollOffset_ = ((this->scrollOffset_ + 1) % bufferWidth);
+      this->lastScroll_ = now;
+      this->dirty_ = true;
     }
+  }
+
+  // hand a new frame to the ISR (if it has picked up the previous one)
+  if (this->dirty_ && !this->swapPending_) {
+    this->composeScanBuffer_();
+  }
 };
 
 void LedDisplayComponent::clear() {
-  // flag update needed and clear frame buffer
-  this->update_ = true;
-
   // reset the width of each of the framebuffer's rows and clear them
   for (int row = 0; (row < this->get_height_internal()); row++) {
-    this->frameBuffer_[row].resize(this->get_width_internal(), this->background_);
     this->frameBuffer_[row].clear();
   }
-  ESP_LOGV(TAG, "Reset the framebuffer size and clear its rows");
+  // new content starts from the beginning
+  this->scrollOffset_ = 0;
+  this->lastScroll_ = millis();
+  this->dirty_ = true;
+  ESP_LOGV(TAG, "Cleared the framebuffer");
 };
 
 uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
@@ -336,96 +299,105 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
   return xPos;
 };
 
-void LedDisplayComponent::scrollLeft_() {
-  // define a lambda to rotate a line left by the given number of steps
-  auto scroll = [&](std::vector<uint8_t> &line, uint16_t steps) {
-    if (line.empty()) return;  // guard against empty buffer
-    steps %= line.size();      // clamp to buffer size
-    if (steps == 0) return;    // no-op if nothing to rotate
-    std::rotate(line.begin(), std::next(line.begin(), steps), line.end());
-  };
+void LedDisplayComponent::composeScanBuffer_() {
+  // render the visible window of the framebuffer into the back scan buffer,
+  // in the order the bits get shifted out, with flip and invert applied
+  const int width = this->get_width_internal();
+  const int height = this->get_height_internal();
+  const size_t bufferWidth = this->frameBuffer_[0].size();
+  const bool wrap = (this->scrollingOn_ && (bufferWidth > (size_t)width));
+  const uint8_t on = (this->invert_ ? 0 : 1);
+  auto &buf = this->scanBuf_[this->shownBuf_ ^ 1];
 
-  // scroll by circular rotating all rows left
-  for (int row = 0; row < this->get_height_internal(); row++) {
-    uint32_t sum = std::accumulate(this->frameBuffer_[row].begin(), this->frameBuffer_[row].end(), 0u);  //// TMP TMP TMP
-    ESP_LOGVV(TAG, "scrollLeft Pre: %u, sum(row: %u) = %u", this->update_, row, sum);  //// TMP TMP TMP
-    if (this->update_) {
-      // update required
-      // Buffer was re-rendered from column 0 by update()
-      // Rotate to catch up to current position + 1 new step
-      // No push_back — buffer size must stay constant
-      scroll(this->frameBuffer_[row], this->stepsLeft_ + 1);
-    } else {
-      // no update required, so just rotate the current row by one
-      scroll(this->frameBuffer_[row], 1);
-    }
-    sum = std::accumulate(this->frameBuffer_[row].begin(), this->frameBuffer_[row].end(), 0u);  //// TMP TMP TMP
-    ESP_LOGVV(TAG, "scrollLeft Post: sum(row: %u) = %u", row, sum);  //// TMP TMP TMP
-  }
-  this->update_ = false;
-  this->stepsLeft_++;
-  this->stepsLeft_ %= this->frameBuffer_[0].size();
-  ESP_LOGVV(TAG, "Scrolled left; stepsLeft: %u", this->stepsLeft_);
-};
-
-void LedDisplayComponent::display_() {
-  if (!this->displayOn_) return;
-  // for each row and for both colors, shift in row data and latch it, then enable the row&color
-  for (uint r = 0; (r < this->get_height_internal()); r++) {
-    auto row = this->flipX_ ? ((this->get_height_internal() - 1) - r) : r;
-    for (LedColor_t color : {RED_LED_COLOR, GREEN_LED_COLOR}) {
-      this->shiftInPixels_(color, row);
-      this->enableRow_(color, r);
-      delayMicroseconds(this->brightness_);
-      this->disableRows_();
+  for (int r = 0; (r < height); r++) {
+    const auto &line = this->frameBuffer_[this->flipX_ ? ((height - 1) - r) : r];
+    for (int c = 0; (c < width); c++) {
+      size_t x = this->flipX_ ? c : ((width - 1) - c);
+      if (wrap) {
+        x = ((x + this->scrollOffset_) % bufferWidth);
+      }
+      const LedColor_t pixel = ((x < line.size()) ? line[x] : this->background_);
+      buf[(r * 2) + 0][c] = ((pixel & RED_LED_COLOR) ? on : !on);
+      buf[(r * 2) + 1][c] = ((pixel & GREEN_LED_COLOR) ? on : !on);
     }
   }
+
+  // make sure the buffer is written before the ISR can see the swap request
+  __asm__ __volatile__("" ::: "memory");
+  this->swapPending_ = true;
+  this->dirty_ = false;
 };
 
-void LedDisplayComponent::enableRow_(LedColor_t rowColor, uint rowNum) {
-  assert(rowNum < this->get_height_internal());
-  gpio_set_level(ROW_BIT_0, (rowNum & 0x01));
-  gpio_set_level(ROW_BIT_1, (rowNum & 0x02));
-  gpio_set_level(ROW_BIT_2, (rowNum & 0x04));
-
-  switch (rowColor) {
-  case (GREEN_LED_COLOR):
-    gpio_set_level(GREEN_LEDS_ENB, 0);
-    gpio_set_level(RED_LEDS_ENB, 1);
-    break;
-  case (RED_LED_COLOR):
-    gpio_set_level(GREEN_LEDS_ENB, 1);
-    gpio_set_level(RED_LEDS_ENB, 0);
-    break;
-  default:
-    ESP_LOGE(TAG, "Invalid row color: %u", rowColor);
+static inline void spinCycles_(uint32_t cycles) {
+  const uint32_t start = esp_cpu_get_cycle_count();
+  while ((esp_cpu_get_cycle_count() - start) < cycles) {
   }
-};
+}
 
-void LedDisplayComponent::disableRows_() {
-    gpio_set_level(GREEN_LEDS_ENB, 1);
-    gpio_set_level(RED_LEDS_ENB, 1);
-    gpio_set_level(ROW_BIT_0, 1);
-    gpio_set_level(ROW_BIT_1, 1);
-    gpio_set_level(ROW_BIT_2, 1);
-};
+bool LedDisplayComponent::onTimerAlarm_(gptimer_handle_t timer,
+                                        const gptimer_alarm_event_data_t *edata,
+                                        void *arg) {
+  auto *self = static_cast<LedDisplayComponent *>(arg);
+  gptimer_alarm_config_t alarm = {};
+  alarm.alarm_count = (edata->alarm_value + self->refreshPhase_());
+  gptimer_set_alarm_action(timer, &alarm);
+  return false;
+}
 
-void LedDisplayComponent::shiftInPixels_(LedColor_t rowColor, uint rowNum) {
-  // clock in and latch all of the given row's pixel data
-  //// FIXME make invert map BLK->AMB, RED->BLK, GRN->BLK????
-  uint8_t hi = (this->invert_ ? 0 : 1);
-  uint8_t lo = (this->invert_ ? 1 : 0);
-  for (int c = 0; (c < this->get_width_internal()); c++) {
-    auto col = this->flipX_ ? c : ((this->get_width_internal() - 1) - c);
-    gpio_set_level(COL_CLOCK, 0);
-    gpio_set_level(COL_DATA, ((this->frameBuffer_[rowNum][col] & rowColor) ? hi : lo));
-    gpio_set_level(COL_CLOCK, 1);
+uint32_t LedDisplayComponent::refreshPhase_() {
+  // called from the timer ISR -- alternates between turning a row on and off;
+  // returns the number of usecs until the next call
+  const uint32_t onTime = this->brightness_;
+
+  // turn the current row off
+  REG_WRITE(GPIO_OUT_W1TS_REG, (ROW_BITS_MASK | ENABLES_MASK));
+  if (this->ledsOn_) {
+    this->ledsOn_ = false;
+    return (SCAN_PHASE_US - SHIFT_TIME_US - onTime);
   }
 
-  // strobe to latch data -- desired color of LEDs in the row are now set
-  gpio_set_level(COL_STROBE, 1);
-  gpio_set_level(COL_STROBE, 0);
-};
+  if (this->phase_ == 0) {
+    // start of a new frame -- switch to the newest buffer, if there is one
+    if (this->swapPending_) {
+      this->shownBuf_ ^= 1;
+      this->swapPending_ = false;
+    }
+  }
+  const uint8_t phase = this->phase_;
+  this->phase_ = ((phase + 1) % NUM_SCAN_PHASES);
+
+  if (!this->displayOn_) {
+    return SCAN_PHASE_US;
+  }
+
+  // shift in the next row's data and latch it
+  const uint8_t *data = this->scanBuf_[this->shownBuf_][phase];
+  for (int c = 0; (c < LED_DISP_WIDTH); c++) {
+    REG_WRITE(GPIO_OUT_W1TC_REG, ((1UL << COL_CLOCK) | (data[c] ? 0 : (1UL << COL_DATA))));
+    if (data[c]) {
+      REG_WRITE(GPIO_OUT_W1TS_REG, (1UL << COL_DATA));
+    }
+    spinCycles_(SETUP_CYCLES);
+    REG_WRITE(GPIO_OUT_W1TS_REG, (1UL << COL_CLOCK));
+    spinCycles_(PULSE_CYCLES);
+  }
+  REG_WRITE(GPIO_OUT_W1TC_REG, (1UL << COL_CLOCK));
+  REG_WRITE(GPIO_OUT_W1TS_REG, (1UL << COL_STROBE));
+  spinCycles_(PULSE_CYCLES);
+  REG_WRITE(GPIO_OUT_W1TC_REG, (1UL << COL_STROBE));
+
+  // select the row, let the decoder settle, then enable the row's color
+  const uint32_t row = (phase >> 1);
+  const uint32_t rowBits = (((row & 0x01) ? (1UL << ROW_BIT_0) : 0) |
+                            ((row & 0x02) ? (1UL << ROW_BIT_1) : 0) |
+                            ((row & 0x04) ? (1UL << ROW_BIT_2) : 0));
+  REG_WRITE(GPIO_OUT_W1TC_REG, (ROW_BITS_MASK & ~rowBits));
+  spinCycles_(SETUP_CYCLES);
+  REG_WRITE(GPIO_OUT_W1TC_REG, ((phase & 0x01) ? (1UL << GREEN_LEDS_ENB) : (1UL << RED_LEDS_ENB)));
+  this->ledsOn_ = true;
+  // timed from the start of this phase, so shifting time is absorbed by SHIFT_TIME_US
+  return (SHIFT_TIME_US + onTime);
+}
 
 }  // namespace led_display
 }  // namespace esphome

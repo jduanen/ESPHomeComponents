@@ -2,6 +2,9 @@
 
 #include "esp_log.h"
 #include "driver/gpio.h"
+#include "driver/gptimer.h"
+#include "esp_cpu.h"
+#include "soc/gpio_reg.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -63,8 +66,23 @@ static const uint8_t LED_NUM_CHARS = 17;
 static const uint8_t LED_DISP_HEIGHT = LED_CHAR_HEIGHT;
 static const uint8_t LED_DISP_WIDTH = (LED_CHAR_WIDTH * LED_NUM_CHARS);
 
-static const uint MAX_LEDS_ON_DELAY = 2000;  // 2 msec
-static const uint MIN_LEDS_ON_DELAY = 1;     // 1 usec
+// The display is refreshed from a hardware timer interrupt, one (row, color)
+// "phase" at a time: 7 rows x 2 colors = 14 phases per frame.
+// 14 x 600us => ~119Hz frame rate, independent of what the main loop is doing.
+static const uint8_t NUM_SCAN_PHASES = (LED_DISP_HEIGHT * 2);
+static const uint32_t SCAN_PHASE_US = 600;
+static const uint32_t SHIFT_TIME_US = 80;      // budget for shifting in one row (85 bits, ~55us)
+static const uint32_t MIN_LEDS_OFF_US = 30;    // always leave the CPU some idle time per phase
+static const uint MAX_LEDS_ON_DELAY = (SCAN_PHASE_US - SHIFT_TIME_US - MIN_LEDS_OFF_US);
+static const uint MIN_LEDS_ON_DELAY = 1;       // 1 usec
+
+// MC14094 timing (worst case @5V): clock high >= 200ns, data setup >= 125ns,
+// strobe >= 200ns.  Expressed in CPU cycles @160MHz, with margin.
+static const uint32_t SETUP_CYCLES = 32;       // 200ns
+static const uint32_t PULSE_CYCLES = 48;       // 300ns
+
+static const uint32_t ROW_BITS_MASK = ((1UL << ROW_BIT_0) | (1UL << ROW_BIT_1) | (1UL << ROW_BIT_2));
+static const uint32_t ENABLES_MASK = ((1UL << RED_LEDS_ENB) | (1UL << GREEN_LEDS_ENB));
 
 static const LedColor_t COLORS[] = {
   BLACK_LED_COLOR,
@@ -125,8 +143,8 @@ public:
 
   void turn_on_off(bool onOff) { this->displayOn_ = onOff; };
 
-  void invert_on_off(bool onOff) { this->invert_ = onOff; };
-  void invert_on_off() { this->invert_ = !this->invert_; };
+  void invert_on_off(bool onOff) { this->invert_ = onOff; this->dirty_ = true; };
+  void invert_on_off() { this->invert_ = !this->invert_; this->dirty_ = true; };
 
   void intensity(uint8_t intensity) {
     this->intensity_ = intensity;
@@ -146,23 +164,18 @@ protected:
 
   LedColor_t background_ = BLACK_LED_COLOR;
 
-  bool update_ = false;
-
-  uint16_t oldBufferWidth_;
-
   bool flipX_;
 
-  bool displayOn_ = false;
+  volatile bool displayOn_ = false;
 
   bool invert_ = false;
 
-  uint8_t intensity_;  //// Intensity of the display from 0 to 100 (brightest)
-  uint brightness_;    //// Intensity mapped into num of uSec linger time
+  uint8_t intensity_;           //// Intensity of the display from 0 to 100 (brightest)
+  volatile uint brightness_;    //// Intensity mapped into num of uSec LEDs are on per phase
 
   bool scrollingOn_;
   uint32_t lastScroll_;
-  uint32_t lastLoop_;
-  uint16_t stepsLeft_;
+  uint16_t scrollOffset_;       //// current horizontal scroll position (in columns)
   uint16_t scrollDwell_;
   uint16_t scrollDelay_;
   uint16_t scrollSpeed_;
@@ -176,7 +189,17 @@ protected:
 
   optional<LedDisplayWriter_t> writerLocal_{};
 
-  void scrollLeft_();
+  // Double-buffered scan data, already in shift-out order (one byte per
+  // column bit) for each (physical row, color) phase.  The main loop writes
+  // the back buffer and requests a swap; the ISR swaps at the start of a frame.
+  uint8_t scanBuf_[2][NUM_SCAN_PHASES][LED_DISP_WIDTH];
+  volatile uint8_t shownBuf_ = 0;
+  volatile bool swapPending_ = false;
+  bool dirty_ = false;          //// visible window needs to be re-composed
+
+  gptimer_handle_t timer_ = nullptr;
+  uint8_t phase_ = 0;
+  bool ledsOn_ = false;
 
   void scroll_(bool onOff, ScrollMode mode, uint16_t speed, uint16_t delay, uint16_t dwell) {
     this->set_scroll(onOff);
@@ -200,11 +223,10 @@ protected:
 
   uint32_t getStringWidth_(Font *font, const char *str);
 
-  void display_();
+  void composeScanBuffer_();
 
-  void enableRow_(LedColor_t rowColor, uint rowNum);
-  void disableRows_();
-  void shiftInPixels_(LedColor_t rowColor, uint rowNum);
+  static bool onTimerAlarm_(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *arg);
+  uint32_t refreshPhase_();
 
   long map_(long x, long inMin, long inMax, long outMin, long outMax) {
     return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
