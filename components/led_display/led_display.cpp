@@ -267,9 +267,8 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
                     esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
                     LedColorToColor(this->background_));
         auto x = this->getStringWidth_(this->currentFont_, strBuf.c_str());
-        ESP_LOGD(TAG, "> xPos=%u, x=%u", xPos, x);  //// TMP TMP TMP
         xPos += x;
-        ESP_LOGD(TAG, "printLED: font=%u, color=%u, xPos=%u, str=%s)", 
+        ESP_LOGV(TAG, "printLED: font=%p, color=%u, xPos=%d, str=%s",
                  this->currentFont_, this->currentColor_, xPos, strBuf.c_str());
         strBuf.clear();
       }
@@ -286,15 +285,14 @@ uint8_t LedDisplayComponent::printLED(uint8_t startPos, const char *str) {
                 esphome::display::TextAlign::TOP_LEFT, strBuf.c_str(),
                 LedColorToColor(this->background_));
     auto x = this->getStringWidth_(this->currentFont_, strBuf.c_str());
-    ESP_LOGD(TAG, "> xPos=%u, x=%u", xPos, x);  //// TMP TMP TMP
     xPos += x;
-    ESP_LOGD(TAG, "final printLED: font=%u, color=%u, xPos=%u, str=%s)", 
+    ESP_LOGV(TAG, "final printLED: font=%p, color=%u, xPos=%d, str=%s",
              this->currentFont_, this->currentColor_, xPos, strBuf.c_str());
   }
 
   this->currentFont_ = startFont;
   this->currentColor_ = startColor;
-  ESP_LOGD(TAG, "exit printLED: currentFont=%u, currentColor=%u",
+  ESP_LOGV(TAG, "exit printLED: currentFont=%p, currentColor=%u",
            this->currentFont_, this->currentColor_);
   return xPos;
 };
